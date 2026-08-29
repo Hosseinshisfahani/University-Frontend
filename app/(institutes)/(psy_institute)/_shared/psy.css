@@ -1,0 +1,61 @@
+/* Psy Institute marketing tokens — scoped under .psy-root */
+
+.psy-root {
+  --psy-ink: #1c2b2a;
+  --psy-muted: #5a6b69;
+  --psy-sage: #6b8f88;
+  --psy-accent: #5f8f7a;
+  --psy-mist: #e8efed;
+  --psy-surface: #f7faf9;
+  --psy-line: rgba(28, 43, 42, 0.1);
+  --psy-wash-a: #dfeae6;
+  --psy-wash-b: #f3f6f4;
+  background: var(--psy-surface);
+  color: var(--psy-ink);
+  min-height: 100%;
+}
+
+html.dark .psy-root {
+  --psy-ink: #e8efed;
+  --psy-muted: #a8b8b5;
+  --psy-sage: #8fb5ad;
+  --psy-accent: #9bc4b4;
+  --psy-mist: #15201e;
+  --psy-surface: #0f1615;
+  --psy-line: rgba(232, 239, 237, 0.12);
+  --psy-wash-a: #15201e;
+  --psy-wash-b: #0f1615;
+}
+
+.psy-hero-wash {
+  background:
+    radial-gradient(120% 80% at 100% 0%, var(--psy-wash-a) 0%, transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, var(--psy-sage) 0%, transparent 50%),
+    linear-gradient(165deg, var(--psy-wash-b), var(--psy-surface));
+  opacity: 0.95;
+}
+
+html.dark .psy-hero-wash {
+  opacity: 0.85;
+}
+
+@keyframes psy-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.psy-fade-up {
+  animation: psy-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .psy-fade-up {
+    animation: none;
+  }
+}
