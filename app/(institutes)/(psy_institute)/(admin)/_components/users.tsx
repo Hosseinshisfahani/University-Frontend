@@ -370,11 +370,11 @@ export function TherapistSummaryClient() {
       <section className="space-y-2">
         <h2 className="font-bold">پیشنهادهای جلسه</h2>
         <ul className="space-y-1 text-sm">
-          {t.offers.map((o) => (
-            <li key={o.id}>
-              {o.session_type_name} {o.is_active ? "" : "(غیرفعال)"}
-            </li>
-          ))}
+            {t.offers.map((o) => (
+              <li key={o.id}>
+                {o.session_type?.name ?? "—"} {o.is_active ? "" : "(غیرفعال)"}
+              </li>
+            ))}
           {!t.offers.length ? <li className="opacity-50">موردی نیست.</li> : null}
         </ul>
       </section>
