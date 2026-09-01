@@ -97,9 +97,6 @@ export function PatientDetailClient({ id }: { id: number }) {
           بازگشت به فهرست
         </Link>
         <h1 className="title mt-3 text-3xl font-extrabold">{data.display_name}</h1>
-        <p className="mt-2 text-sm text-[#1a2423]/55 dark:text-white/50">
-          {data.phone || "بدون تلفن"}
-        </p>
         <PatientStats
           appointments={data.appointments_count}
           notes={data.notes_count}
