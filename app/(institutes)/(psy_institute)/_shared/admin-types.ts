@@ -12,6 +12,7 @@ export type AdminOverview = {
   canceled_this_week: number;
   patients_count: number;
   therapists_active_count: number;
+  pending_reviews_count: number;
   revenue_7d: string;
   capture_7d: string;
   refund_7d: string;

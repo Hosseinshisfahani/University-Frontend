@@ -60,6 +60,36 @@ export function slotStatusLabel(status: string): string {
   return map[status] ?? status;
 }
 
+export function reviewTextStatusLabel(status: string): string {
+  const map: Record<string, string> = {
+    none: "بدون متن",
+    pending: "در انتظار تأیید",
+    approved: "تأیید شده",
+    rejected: "رد شده",
+  };
+  return map[status] ?? status;
+}
+
+export function formatStarAverage(
+  avg: number | null | undefined,
+  count: number,
+): string {
+  if (avg == null || !count) return "بدون امتیاز";
+  const n = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 }).format(
+    avg,
+  );
+  const c = new Intl.NumberFormat("fa-IR").format(count);
+  return `${n} از ۵ (${c} نظر)`;
+}
+
+export function canCompleteAppointment(
+  status: string,
+  endsAt: string,
+  now = Date.now(),
+): boolean {
+  return status === "confirmed" && new Date(endsAt).getTime() <= now;
+}
+
 export function leaveStatusLabel(status: string): string {
   const map: Record<string, string> = {
     pending: "در انتظار بررسی",

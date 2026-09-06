@@ -25,7 +25,7 @@ export default function OverviewClient() {
       {isError ? <p className="text-sm text-red-600">خطا در دریافت خلاصه</p> : null}
 
       {data ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {[
             {
               label: "نوبت‌های پیش‌رو",
@@ -51,6 +51,11 @@ export default function OverviewClient() {
               label: "درآمد خالص ۷ روز",
               value: formatIrr(data.revenue_7d),
               href: "/admin/finance",
+            },
+            {
+              label: "نظرات در انتظار",
+              value: String(data.pending_reviews_count ?? 0),
+              href: "/admin/reviews",
             },
           ].map((card) => (
             <Link

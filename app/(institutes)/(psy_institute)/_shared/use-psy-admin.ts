@@ -37,6 +37,7 @@ export const adminKeys = {
     ["psy-admin", "finance", "payments", params] as const,
   financeRevenue: (params: Record<string, unknown>) =>
     ["psy-admin", "finance", "revenue", params] as const,
+  reviews: (status?: string) => ["psy-admin", "reviews", status] as const,
 };
 
 export function useAdminOverview() {
@@ -346,6 +347,39 @@ export function useRejectLeaveRequest() {
       adminApi.rejectLeaveRequest(args.id, args.adminNote ?? ""),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["psy-admin", "leave"] });
+    },
+  });
+}
+
+export function useAdminReviews(status?: string) {
+  return useQuery({
+    queryKey: adminKeys.reviews(status),
+    queryFn: () => adminApi.reviews({ status }),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useApproveReview() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: number; adminNote?: string }) =>
+      adminApi.approveReview(args.id, args.adminNote ?? ""),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "reviews"] });
+      qc.invalidateQueries({ queryKey: adminKeys.overview });
+      qc.invalidateQueries({ queryKey: psyKeys.therapists });
+    },
+  });
+}
+
+export function useRejectReview() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: number; adminNote?: string }) =>
+      adminApi.rejectReview(args.id, args.adminNote ?? ""),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "reviews"] });
+      qc.invalidateQueries({ queryKey: adminKeys.overview });
     },
   });
 }

@@ -18,6 +18,7 @@ import {
   useCancelAppointment,
   useConfirmAppointmentPayment,
   useMyAppointments,
+  useSubmitAppointmentReview,
   useTherapistSlots,
   useTherapists,
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
@@ -25,6 +26,7 @@ import type { Appointment, AppointmentSlot, Therapist } from "@/app/(institutes)
 import {
   appointmentStatusLabel as statusLabel,
   isOpenAppointmentStatus,
+  reviewTextStatusLabel,
 } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
 
 function dayRange(daysAhead: number) {
@@ -495,9 +497,100 @@ export function AppointmentDetailClient({ id }: { id: number }) {
           </button>
         ) : null}
       </div>
+      {item.status === "completed" ? <PatientReviewPanel appointment={item} /> : null}
       <Link href="/patient/appointments" className="text-sm text-primary underline">
         بازگشت به لیست
       </Link>
     </div>
+  );
+}
+
+function PatientReviewPanel({ appointment }: { appointment: Appointment }) {
+  const submit = useSubmitAppointmentReview();
+  const [rating, setRating] = useState(appointment.review?.rating ?? 0);
+  const [body, setBody] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const review = appointment.review;
+
+  async function onSubmit() {
+    if (rating < 1) {
+      setError("امتیاز را انتخاب کنید.");
+      return;
+    }
+    setError(null);
+    try {
+      await submit.mutateAsync({
+        id: appointment.id,
+        rating,
+        body: body.trim() || undefined,
+      });
+    } catch {
+      setError("ثبت نظر ناموفق بود.");
+    }
+  }
+
+  if (review) {
+    return (
+      <section className="rounded-2xl border border-foreground/10 p-5">
+        <h2 className="font-bold">نظر شما</h2>
+        <p className="mt-2 text-lg text-amber-600" dir="ltr">
+          {"★".repeat(review.rating)}
+          {"☆".repeat(5 - review.rating)}
+        </p>
+        {review.body ? (
+          <p className="mt-3 text-sm leading-7">{review.body}</p>
+        ) : null}
+        {review.text_status === "pending" ? (
+          <p className="mt-2 text-sm text-foreground/60">
+            نظر شما در انتظار تأیید است
+          </p>
+        ) : review.text_status === "rejected" ? (
+          <p className="mt-2 text-sm text-foreground/60">
+            متن نظر تأیید نشد. امتیاز شما ثبت شده است.
+          </p>
+        ) : review.text_status === "approved" ? (
+          <p className="mt-2 text-sm text-foreground/60">
+            {reviewTextStatusLabel(review.text_status)}
+          </p>
+        ) : null}
+      </section>
+    );
+  }
+
+  return (
+    <section className="space-y-3 rounded-2xl border border-foreground/10 p-5">
+      <h2 className="font-bold">امتیاز به درمانگر</h2>
+      <p className="text-sm text-foreground/60">
+        امتیاز بلافاصله ثبت می‌شود. متن نظر پس از تأیید مدیریت منتشر می‌شود.
+      </p>
+      <div className="flex gap-1" dir="ltr">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => setRating(star)}
+            className={`text-2xl ${star <= rating ? "text-amber-500" : "text-foreground/25"}`}
+            aria-label={`${star} ستاره`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+        placeholder="نظر اختیاری…"
+        className="min-h-24 w-full rounded-lg border border-foreground/15 bg-background px-3 py-2 text-sm"
+      />
+      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      <button
+        type="button"
+        disabled={submit.isPending}
+        onClick={onSubmit}
+        className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-[#332B1A] disabled:opacity-60"
+      >
+        {submit.isPending ? "در حال ثبت…" : "ثبت امتیاز"}
+      </button>
+    </section>
   );
 }

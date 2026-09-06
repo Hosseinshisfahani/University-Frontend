@@ -27,9 +27,14 @@ export const psyKeys = {
   workshop: (slug: string) => ["psy", "workshops", slug] as const,
   myWorkshopEnrollments: ["psy", "workshop-enrollments"] as const,
   therapistWorkshops: ["psy", "therapist", "workshops"] as const,
+  therapistFinance: (start?: string, end?: string) =>
+    ["psy", "therapist", "finance", start, end] as const,
   workshopRoster: (slug: string) => ["psy", "workshops", slug, "roster"] as const,
   blogPosts: (page?: number) => ["psy", "blog", page ?? 1] as const,
   blogPost: (slug: string) => ["psy", "blog", "detail", slug] as const,
+  therapistPublicReviews: (id: number) =>
+    ["psy", "therapists", id, "reviews"] as const,
+  therapistReviews: ["psy", "therapist", "reviews"] as const,
 };
 
 export function useTherapists() {
@@ -131,6 +136,49 @@ export function useCancelAppointment() {
       qc.invalidateQueries({ queryKey: psyKeys.appointments });
       qc.invalidateQueries({ queryKey: financeKeys.wallet });
     },
+  });
+}
+
+export function useCompleteAppointment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => psyApi.completeAppointment(id),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: psyKeys.appointments });
+      qc.invalidateQueries({ queryKey: psyKeys.appointment(id) });
+      qc.invalidateQueries({ queryKey: ["psy-admin", "appointments"] });
+    },
+  });
+}
+
+export function useSubmitAppointmentReview() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: number; rating: number; body?: string }) =>
+      psyApi.submitAppointmentReview(args.id, {
+        rating: args.rating,
+        body: args.body,
+      }),
+    onSuccess: (_data, args) => {
+      qc.invalidateQueries({ queryKey: psyKeys.appointments });
+      qc.invalidateQueries({ queryKey: psyKeys.appointment(args.id) });
+      qc.invalidateQueries({ queryKey: psyKeys.therapists });
+    },
+  });
+}
+
+export function useTherapistPublicReviews(therapistId: number) {
+  return useQuery({
+    queryKey: psyKeys.therapistPublicReviews(therapistId),
+    queryFn: () => psyApi.therapistPublicReviews(therapistId),
+    enabled: therapistId > 0,
+  });
+}
+
+export function useTherapistReviews() {
+  return useQuery({
+    queryKey: psyKeys.therapistReviews,
+    queryFn: () => psyApi.therapistReviews(),
   });
 }
 
@@ -446,6 +494,15 @@ export function useTherapistWorkshops() {
   return useQuery({
     queryKey: psyKeys.therapistWorkshops,
     queryFn: () => psyApi.therapistWorkshops(),
+  });
+}
+
+export function useTherapistFinance(startDate: string, endDate: string) {
+  return useQuery({
+    queryKey: psyKeys.therapistFinance(startDate, endDate),
+    queryFn: () =>
+      psyApi.therapistFinance({ start_date: startDate, end_date: endDate }),
+    enabled: Boolean(startDate && endDate),
   });
 }
 

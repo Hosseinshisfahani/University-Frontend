@@ -2,6 +2,24 @@
 
 @import "tailwindcss";
 
+@theme {
+    /* طیف فیروزه‌ای اصیل (Primary) */
+    --color-psy-primary-50: #F0FAFB;
+    --color-psy-primary-100: #DDF1F3;
+    --color-psy-primary-300: #93D6DC;
+    --color-psy-primary-500: #008C9E;
+    --color-psy-primary-700: #006B7A;
+    --color-psy-primary-900: #003840;
+  
+    /* طیف طلایی/خردلی (Accent) */
+    --color-psy-accent-50: #FDF9EC;
+    --color-psy-accent-100: #F6F0D7;
+    --color-psy-accent-300: #E6D28C;
+    --color-psy-accent-500: #D4AF37; /* طلایی گنبد شیخ لطف‌الله */
+    --color-psy-accent-700: #9F8329;
+    --color-psy-accent-900: #554616;
+  }
+
 html {
     --background: #F5F1E8;
     --foreground: #171717;
@@ -125,3 +143,5 @@ html.dark .gradient-text {
 html {
     scroll-behavior: smooth;
   }
+
+  

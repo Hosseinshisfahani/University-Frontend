@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useTherapists } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
+import {
+  useTherapistPublicReviews,
+  useTherapists,
+} from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
+import { formatStarAverage } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
+import { formatJalaliFriendlyDate } from "@/lib/datetime/jalali";
 import { useAuthStore } from "@/features/auth/store";
 import { isPsyPatient } from "@/features/auth/types";
 
@@ -62,6 +67,9 @@ export function PsyTherapists() {
                   <p className="mt-2 line-clamp-3 text-sm leading-7 text-[var(--psy-muted)]">
                     {t.bio || "بدون توضیح"}
                   </p>
+                  <p className="mt-2 text-sm text-[var(--psy-sage)]">
+                    {formatStarAverage(t.rating_avg, t.rating_count ?? 0)}
+                  </p>
                 </div>
                 <span className="mt-auto text-sm font-medium text-[var(--psy-sage)]">
                   مشاهده پروفایل ←
@@ -81,6 +89,7 @@ export function PsyTherapists() {
 
 export function TherapistPublicProfile({ id }: { id: number }) {
   const { data: therapists, isLoading } = useTherapists();
+  const { data: reviews } = useTherapistPublicReviews(id);
   const therapist = (therapists ?? []).find((t) => t.id === id);
   const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -122,6 +131,9 @@ export function TherapistPublicProfile({ id }: { id: number }) {
           ) : (
             <p className="mt-2 text-sm text-[var(--psy-muted)]">فعلاً پذیرش ندارد</p>
           )}
+          <p className="mt-2 text-sm text-[var(--psy-sage)]">
+            {formatStarAverage(therapist.rating_avg, therapist.rating_count ?? 0)}
+          </p>
           <p className="mt-6 text-base leading-8 text-[var(--psy-muted)]">
             {therapist.bio || "بدون شرح حال منتشرشده."}
           </p>
@@ -147,6 +159,37 @@ export function TherapistPublicProfile({ id }: { id: number }) {
           ) : null}
         </div>
       </div>
+
+      <section className="mt-12 space-y-4">
+        <h2 className="text-lg font-bold text-[var(--psy-ink)]">نظرات تأییدشده</h2>
+        <ul className="space-y-3">
+          {(reviews ?? []).map((row) => (
+            <li
+              key={row.id}
+              className="rounded-2xl border border-[var(--psy-line)] bg-[var(--psy-surface)] p-5"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-medium">{row.patient_first_name || "مراجع"}</p>
+                <p className="text-amber-600" dir="ltr">
+                  {"★".repeat(row.rating)}
+                  {"☆".repeat(5 - row.rating)}
+                </p>
+              </div>
+              {row.body ? (
+                <p className="mt-3 text-sm leading-7 text-[var(--psy-muted)]">
+                  {row.body}
+                </p>
+              ) : null}
+              <p className="mt-2 text-xs text-[var(--psy-muted)]">
+                {formatJalaliFriendlyDate(row.created_at)}
+              </p>
+            </li>
+          ))}
+          {!(reviews ?? []).length ? (
+            <li className="text-sm text-[var(--psy-muted)]">نظر تأییدشده‌ای نیست.</li>
+          ) : null}
+        </ul>
+      </section>
     </article>
   );
 }

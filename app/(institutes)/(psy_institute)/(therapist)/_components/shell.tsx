@@ -14,6 +14,8 @@ const NAV = [
   { href: "/therapist/overview", label: "نمای کلی" },
   { href: "/therapist/schedule", label: "مرخصی" },
   { href: "/therapist/appointments", label: "نوبت‌ها" },
+  { href: "/therapist/finance", label: "گزارش مالی" },
+  { href: "/therapist/reviews", label: "نظرات" },
   { href: "/therapist/patients", label: "مراجعان من" },
   { href: "/therapist/workshops", label: "کارگاه‌های من" },
   { href: "/therapist/responses", label: "پاسخ آزمون‌ها" },

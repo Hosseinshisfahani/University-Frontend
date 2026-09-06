@@ -25,6 +25,9 @@ import type {
   BlogPost,
   BlogPostPage,
   BlogPostWrite,
+  TherapistFinanceReport,
+  TherapistReview,
+  PublicTherapistReview,
 } from "./types";
 
 export const psyApi = {
@@ -90,6 +93,25 @@ export const psyApi = {
 
   cancelAppointment(id: number, reason = ""): Promise<Appointment> {
     return apiClient.post(`/psy/appointments/${id}/cancel/`, { reason });
+  },
+
+  completeAppointment(id: number): Promise<Appointment> {
+    return apiClient.post(`/psy/appointments/${id}/complete/`, {});
+  },
+
+  submitAppointmentReview(
+    id: number,
+    data: { rating: number; body?: string },
+  ): Promise<TherapistReview> {
+    return apiClient.post(`/psy/appointments/${id}/review/`, data);
+  },
+
+  therapistPublicReviews(therapistId: number): Promise<PublicTherapistReview[]> {
+    return apiClient.get(`/psy/therapists/${therapistId}/reviews/`);
+  },
+
+  therapistReviews(): Promise<TherapistReview[]> {
+    return apiClient.get("/psy/therapist/reviews/");
   },
 
   moveAppointment(id: number, newSlotId: number): Promise<Appointment> {
@@ -312,6 +334,17 @@ export const psyApi = {
 
   therapistWorkshops(): Promise<Workshop[]> {
     return apiClient.get("/psy/therapist/workshops/");
+  },
+
+  therapistFinance(params?: {
+    start_date?: string;
+    end_date?: string;
+  }): Promise<TherapistFinanceReport> {
+    const q = new URLSearchParams();
+    if (params?.start_date) q.set("start_date", params.start_date);
+    if (params?.end_date) q.set("end_date", params.end_date);
+    const qs = q.toString();
+    return apiClient.get(`/psy/therapist/finance/${qs ? `?${qs}` : ""}`);
   },
 
   workshopSessions(slug: string): Promise<WorkshopSessionWrite[]> {

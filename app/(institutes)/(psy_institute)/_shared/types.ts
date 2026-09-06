@@ -1,3 +1,26 @@
+export type TherapistReview = {
+  id: number;
+  appointment: number;
+  patient: number;
+  patient_first_name: string;
+  therapist: number;
+  therapist_name: string;
+  rating: number;
+  body: string;
+  text_status: "none" | "pending" | "approved" | "rejected" | string;
+  admin_note?: string;
+  created_at: string;
+  reviewed_at?: string | null;
+};
+
+export type PublicTherapistReview = {
+  id: number;
+  rating: number;
+  body: string;
+  patient_first_name: string;
+  created_at: string;
+};
+
 export type Therapist = {
   id: number;
   display_name: string;
@@ -6,6 +29,8 @@ export type Therapist = {
   is_accepting_patients: boolean;
   is_active: boolean;
   offers?: TherapistSessionOffer[];
+  rating_avg?: number | null;
+  rating_count?: number;
 };
 
 export type SessionType = {
@@ -49,6 +74,7 @@ export type Appointment = {
   refund_policy_applied: string;
   meeting_link: string;
   created_at: string;
+  review?: TherapistReview | null;
 };
 
 export type SessionNote = {
@@ -186,6 +212,25 @@ export type TherapistPatientDetail = TherapistPatientSummary & {
   recent_appointments: Appointment[];
   recent_notes: SessionNote[];
   recent_responses: PsychometricResponse[];
+};
+
+export type TherapistFinanceAppointment = {
+  id: number;
+  starts_at: string;
+  session_type_name: string;
+  patient_id: number;
+  patient_name: string;
+  amount: string;
+  status: string;
+};
+
+export type TherapistFinanceReport = {
+  start_date: string;
+  end_date: string;
+  total_income: string;
+  paid_sessions_count: number;
+  upcoming_potential_revenue: string;
+  appointments: TherapistFinanceAppointment[];
 };
 
 export type Workshop = {

@@ -14,6 +14,7 @@ const NAV = [
   { href: "/admin/overview", label: "نمای کلی" },
   { href: "/admin/schedule", label: "تقویم" },
   { href: "/admin/leave", label: "مرخصی‌ها" },
+  { href: "/admin/reviews", label: "نظرات" },
   { href: "/admin/appointments", label: "نوبت‌ها" },
   { href: "/admin/workshops", label: "کارگاه‌ها" },
   { href: "/admin/blog", label: "مقالات" },

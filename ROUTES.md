@@ -96,6 +96,8 @@ Guard: `TherapistGuard` · shell: `TherapistShell`
 | `/therapist/schedule` | `.../therapist/schedule/page.tsx` | Leave requests |
 | `/therapist/appointments` | `.../therapist/appointments/page.tsx` | Appointments |
 | `/therapist/appointments/[id]` | `.../therapist/appointments/[id]/page.tsx` | Appointment detail |
+| `/therapist/finance` | `.../therapist/finance/page.tsx` | Own earnings (read-only) |
+| `/therapist/reviews` | `.../therapist/reviews/page.tsx` | Approved patient comments |
 | `/therapist/patients` | `.../therapist/patients/page.tsx` | Patients |
 | `/therapist/patients/[id]` | `.../therapist/patients/[id]/page.tsx` | Patient summary |
 | `/therapist/responses` | `.../therapist/responses/page.tsx` | Psychometric responses |
@@ -118,6 +120,7 @@ Guard: `AdminGuard` · shell: `AdminShell`
 | `/admin/appointments/[id]` | `.../admin/appointments/[id]/page.tsx` | Appointment detail |
 | `/admin/schedule` | `.../admin/schedule/page.tsx` | Master calendar |
 | `/admin/leave` | `.../admin/leave/page.tsx` | Leave request inbox |
+| `/admin/reviews` | `.../admin/reviews/page.tsx` | Review moderation inbox |
 | `/admin/finance` | `.../admin/finance/page.tsx` | Finance |
 | `/admin/users/patients` | `.../admin/users/patients/page.tsx` | Patients directory |
 | `/admin/users/patients/[id]` | `.../admin/users/patients/[id]/page.tsx` | Patient summary |

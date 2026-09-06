@@ -1,42 +1,173 @@
 /* Psy Institute marketing tokens — scoped under .psy-root */
 
 .psy-root {
-  --psy-ink: #1c2b2a;
-  --psy-muted: #5a6b69;
-  --psy-sage: #6b8f88;
-  --psy-accent: #5f8f7a;
-  --psy-mist: #e8efed;
-  --psy-surface: #f7faf9;
-  --psy-line: rgba(28, 43, 42, 0.1);
-  --psy-wash-a: #dfeae6;
-  --psy-wash-b: #f3f6f4;
+  --psy-ink: #061c35;
+  --psy-muted: #486474;
+  --psy-sage: #007a8c;
+  --psy-persian-blue: #1c39bb;
+  --psy-persian-blue-deep: #102a8f;
+  --psy-turquoise: #12a8b5;
+  --psy-gold: #d4af37;
+  --psy-accent: var(--psy-gold);
+  --psy-mist: #e1f3f5;
+  --psy-surface: #f7fbf8;
+  --psy-line: rgba(6, 28, 53, 0.12);
+  --psy-wash-a: #dbe8ff;
+  --psy-wash-b: #eef9f8;
   background: var(--psy-surface);
   color: var(--psy-ink);
   min-height: 100%;
 }
 
 html.dark .psy-root {
-  --psy-ink: #e8efed;
-  --psy-muted: #a8b8b5;
-  --psy-sage: #8fb5ad;
-  --psy-accent: #9bc4b4;
-  --psy-mist: #15201e;
-  --psy-surface: #0f1615;
-  --psy-line: rgba(232, 239, 237, 0.12);
-  --psy-wash-a: #15201e;
-  --psy-wash-b: #0f1615;
+  --psy-ink: #eef7ff;
+  --psy-muted: #9fb4c5;
+  --psy-sage: #17adbc;
+  --psy-persian-blue: #6d86ff;
+  --psy-persian-blue-deep: #101f5c;
+  --psy-turquoise: #1fc6cf;
+  --psy-gold: #e5c25c;
+  --psy-accent: var(--psy-gold);
+  --psy-mist: #071d32;
+  --psy-surface: #03101f;
+  --psy-line: rgba(238, 247, 255, 0.15);
+  --psy-wash-a: #0c2360;
+  --psy-wash-b: #03101f;
 }
 
 .psy-hero-wash {
   background:
-    radial-gradient(120% 80% at 100% 0%, var(--psy-wash-a) 0%, transparent 55%),
-    radial-gradient(90% 70% at 0% 100%, var(--psy-sage) 0%, transparent 50%),
-    linear-gradient(165deg, var(--psy-wash-b), var(--psy-surface));
+    radial-gradient(80% 70% at 90% 8%, color-mix(in srgb, var(--psy-persian-blue) 30%, transparent) 0%, transparent 58%),
+    radial-gradient(70% 60% at 8% 82%, color-mix(in srgb, var(--psy-turquoise) 36%, transparent) 0%, transparent 56%),
+    radial-gradient(48% 45% at 52% 32%, color-mix(in srgb, var(--psy-gold) 18%, transparent) 0%, transparent 62%),
+    linear-gradient(145deg, var(--psy-wash-b), var(--psy-surface) 48%, color-mix(in srgb, var(--psy-persian-blue) 10%, var(--psy-surface)));
   opacity: 0.95;
 }
 
 html.dark .psy-hero-wash {
   opacity: 0.85;
+}
+
+.psy-tile-pattern {
+  background-image:
+    linear-gradient(45deg, color-mix(in srgb, var(--psy-persian-blue) 18%, transparent) 25%, transparent 25%),
+    linear-gradient(-45deg, color-mix(in srgb, var(--psy-turquoise) 16%, transparent) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, color-mix(in srgb, var(--psy-gold) 18%, transparent) 75%),
+    linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--psy-persian-blue) 14%, transparent) 75%);
+  background-position:
+    0 0,
+    0 14px,
+    14px -14px,
+    -14px 0;
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+.psy-section {
+  background:
+    radial-gradient(circle at 14% 18%, color-mix(in srgb, var(--psy-gold) 11%, transparent), transparent 26%),
+    radial-gradient(circle at 86% 76%, color-mix(in srgb, var(--psy-persian-blue) 10%, transparent), transparent 28%);
+}
+
+.psy-mosque-dome {
+  border-radius: 999px 999px 36px 36px;
+  background:
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, white 18%, transparent), transparent 28%),
+    linear-gradient(145deg, var(--psy-persian-blue), var(--psy-turquoise));
+  box-shadow: 0 30px 80px color-mix(in srgb, var(--psy-persian-blue) 34%, transparent);
+}
+
+.psy-mosque-dome::before,
+.psy-mosque-dome::after {
+  position: absolute;
+  content: "";
+  border-radius: 999px 999px 28px 28px;
+  background: color-mix(in srgb, var(--psy-gold) 78%, white 8%);
+  opacity: 0.8;
+}
+
+.psy-mosque-dome::before {
+  inset: 44px auto auto 42px;
+  width: 58px;
+  height: 140px;
+}
+
+.psy-mosque-dome::after {
+  inset: 44px 42px auto auto;
+  width: 58px;
+  height: 140px;
+}
+
+.psy-arch-card {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10rem 10rem 2.5rem 2.5rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 34%),
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(160deg, var(--psy-persian-blue-deep), var(--psy-persian-blue) 56%, #008c9e);
+  box-shadow: 0 32px 90px color-mix(in srgb, var(--psy-persian-blue-deep) 34%, transparent);
+}
+
+.psy-arch-card::before {
+  position: absolute;
+  inset: 1rem;
+  content: "";
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9rem 9rem 2rem 2rem;
+  pointer-events: none;
+}
+
+.psy-tile-piece {
+  width: 160px;
+  height: 122px;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  border-radius: 2rem;
+  background: var(--psy-turquoise);
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.2),
+    0 0 0 8px rgba(255, 255, 255, 0.08);
+}
+
+.psy-tile-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.psy-tile-card::before {
+  position: absolute;
+  inset: -1px;
+  content: "";
+  background:
+    linear-gradient(45deg, transparent 46%, color-mix(in srgb, var(--psy-persian-blue) 16%, transparent) 46% 54%, transparent 54%),
+    linear-gradient(-45deg, transparent 46%, color-mix(in srgb, var(--psy-gold) 15%, transparent) 46% 54%, transparent 54%);
+  background-size: 42px 42px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.psy-tile-card > * {
+  position: relative;
+}
+
+.psy-cta-ornament {
+  position: relative;
+  overflow: hidden;
+}
+
+.psy-cta-ornament::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.22), transparent 24%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25% 50%, rgba(255, 255, 255, 0.05) 50% 75%, transparent 75%);
+  background-size: auto, 36px 36px;
+  opacity: 0.75;
+}
+
+.psy-cta-ornament > * {
+  position: relative;
 }
 
 @keyframes psy-fade-up {
@@ -58,4 +189,23 @@ html.dark .psy-hero-wash {
   .psy-fade-up {
     animation: none;
   }
+}
+
+
+@theme {
+  /* طیف فیروزه‌ای اصیل (Primary) */
+  --color-psy-primary-50: #F0FAFB;
+  --color-psy-primary-100: #DDF1F3;
+  --color-psy-primary-300: #93D6DC;
+  --color-psy-primary-500: #008C9E;
+  --color-psy-primary-700: #006B7A;
+  --color-psy-primary-900: #003840;
+
+  /* طیف طلایی/خردلی (Accent) */
+  --color-psy-accent-50: #FDF9EC;
+  --color-psy-accent-100: #F6F0D7;
+  --color-psy-accent-300: #E6D28C;
+  --color-psy-accent-500: #D4AF37; /* طلایی گنبد شیخ لطف‌الله */
+  --color-psy-accent-700: #9F8329;
+  --color-psy-accent-900: #554616;
 }

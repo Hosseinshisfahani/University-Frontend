@@ -94,6 +94,12 @@ export default function OverviewClient() {
         >
           فهرست نوبت‌ها
         </Link>
+        <Link
+          href="/therapist/finance"
+          className="rounded-md border border-[#1a2423]/20 px-5 py-2.5 text-sm font-medium dark:border-white/20"
+        >
+          گزارش مالی
+        </Link>
       </div>
     </div>
   );

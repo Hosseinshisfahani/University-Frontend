@@ -22,8 +22,8 @@ import {
   useAdminMoveAppointment,
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy-admin";
 import { useParams, useRouter } from "next/navigation";
-import { useAppointment, useTherapistSlots } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
-import { appointmentStatusLabel as statusLabel, isOpenAppointmentStatus, refundPolicyLabel, sessionModalityLabel } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
+import { useAppointment, useCompleteAppointment, useTherapistSlots } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
+import { appointmentStatusLabel as statusLabel, canCompleteAppointment, isOpenAppointmentStatus, refundPolicyLabel, sessionModalityLabel } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
 import type { AdminBookPayment } from "@/app/(institutes)/(psy_institute)/_shared/types";
 
 const STATUS_FILTERS = [
@@ -388,6 +388,7 @@ export function AdminAppointmentDetailClient() {
   const { data: appt, isLoading } = useAppointment(id);
   const cancel = useAdminCancelAppointment();
   const move = useAdminMoveAppointment();
+  const complete = useCompleteAppointment();
   const [slotId, setSlotId] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -472,6 +473,24 @@ export function AdminAppointmentDetailClient() {
       </dl>
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+      {canCompleteAppointment(appt.status, appt.ends_at) ? (
+        <button
+          type="button"
+          disabled={complete.isPending}
+          className="rounded-md bg-[#0f1a1c] px-4 py-2 text-sm text-white disabled:opacity-40 dark:bg-teal-700"
+          onClick={async () => {
+            setError(null);
+            try {
+              await complete.mutateAsync(appt.id);
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "خطا در تکمیل نوبت");
+            }
+          }}
+        >
+          انجام شد
+        </button>
+      ) : null}
 
       {canAct ? (
         <div className="space-y-4 rounded-lg border border-red-500/20 bg-red-500/5 p-5">

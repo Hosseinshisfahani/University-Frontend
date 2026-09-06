@@ -8,6 +8,7 @@ import type {
   ExceptionWrite,
   LeaveRequest,
   TherapistAvailability,
+  TherapistReview,
   TherapistSessionOffer,
 } from "./types";
 import type {
@@ -257,6 +258,22 @@ export const adminApi = {
 
   rejectLeaveRequest(id: number, adminNote = ""): Promise<LeaveRequest> {
     return apiClient.post(`/psy/admin/leave-requests/${id}/reject/`, {
+      admin_note: adminNote,
+    });
+  },
+
+  reviews(params?: { status?: string }): Promise<TherapistReview[]> {
+    return apiClient.get(`/psy/admin/reviews/${qs(params ?? {})}`);
+  },
+
+  approveReview(id: number, adminNote = ""): Promise<TherapistReview> {
+    return apiClient.post(`/psy/admin/reviews/${id}/approve/`, {
+      admin_note: adminNote,
+    });
+  },
+
+  rejectReview(id: number, adminNote = ""): Promise<TherapistReview> {
+    return apiClient.post(`/psy/admin/reviews/${id}/reject/`, {
       admin_note: adminNote,
     });
   },

@@ -11,6 +11,7 @@ import {
 } from "@/lib/datetime/jalali";
 import {
   useAppointment,
+  useCompleteAppointment,
   useCreateSessionNote,
   useDeleteSessionNote,
   useMyAppointments,
@@ -19,7 +20,7 @@ import {
   useUpdateSessionNote,
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
 import type { Appointment, SessionNote } from "@/app/(institutes)/(psy_institute)/_shared/types";
-import { appointmentStatusLabel as statusLabel, isOpenAppointmentStatus } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
+import { appointmentStatusLabel as statusLabel, canCompleteAppointment, isOpenAppointmentStatus } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
 
 function AgendaList({
   title,
@@ -221,9 +222,11 @@ function SessionNotesPanel({ appointmentId }: { appointmentId: number }) {
 export function TherapistAppointmentDetail({ id }: { id: number }) {
   const { data: item, isLoading } = useAppointment(id);
   const setLink = useSetMeetingLink();
+  const complete = useCompleteAppointment();
   const [meetingLink, setMeetingLink] = useState("");
   const [linkSaved, setLinkSaved] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [completeError, setCompleteError] = useState<string | null>(null);
 
   if (isLoading) return <p>در حال بارگذاری…</p>;
   if (!item) return <p>نوبت پیدا نشد.</p>;
@@ -251,6 +254,28 @@ export function TherapistAppointmentDetail({ id }: { id: number }) {
         </p>
         <p className="mt-2 text-sm">{statusLabel(item.status)}</p>
         <p className="mt-2 text-sm">{formatIrr(item.price_snapshot)}</p>
+        {canCompleteAppointment(item.status, item.ends_at) ? (
+          <div className="mt-4 space-y-2">
+            {completeError ? (
+              <p className="text-sm text-red-600">{completeError}</p>
+            ) : null}
+            <button
+              type="button"
+              disabled={complete.isPending}
+              className="rounded-md bg-[#1a2423] px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-primary dark:text-[#332B1A]"
+              onClick={async () => {
+                setCompleteError(null);
+                try {
+                  await complete.mutateAsync(item.id);
+                } catch {
+                  setCompleteError("علامت‌گذاری انجام شد ناموفق بود.");
+                }
+              }}
+            >
+              انجام شد
+            </button>
+          </div>
+        ) : null}
       </div>
 
       {item.session_type_modality === "online" || item.meeting_link ? (
