@@ -1,16 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { FormEvent, useState } from "react";
 import {
   formatJalaliDateTime,
   formatJalaliFriendlyDate,
   formatJalaliTime,
 } from "@/lib/datetime/jalali";
-import { useMyPatient, useMyPatients } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
+import {
+  useCreateFileAccessRequest,
+  useMyPatient,
+  useMyPatients,
+} from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
 import {
   appointmentStatusLabel,
+  fileAccessStatusLabel,
   psychometricResponseStatusLabel,
+  riskFlagLabel,
 } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
+import type { ClinicalReport } from "@/app/(institutes)/(psy_institute)/_shared/types";
 
 function faCount(n: number) {
   return new Intl.NumberFormat("fa-IR").format(n);
@@ -81,11 +89,52 @@ export function PatientsListClient() {
   );
 }
 
+function ClinicalReportCard({ report }: { report: ClinicalReport }) {
+  return (
+    <li className="rounded-md border border-[#1a2423]/8 p-3 dark:border-white/10">
+      <p className="font-medium">{report.therapist_name}</p>
+      <p className="mt-1 text-xs text-[#1a2423]/45">
+        {report.session_type_name} · {formatJalaliDateTime(report.appointment_starts_at)}
+      </p>
+      <p className="mt-3 whitespace-pre-wrap text-sm leading-7">{report.summary}</p>
+      <p className="mt-2 text-sm leading-7 opacity-80">{report.assessment}</p>
+      <p className="mt-2 text-sm leading-7 opacity-80">{report.treatment_plan}</p>
+      {report.risk_flags.length ? (
+        <p className="mt-2 text-xs text-red-700">
+          {report.risk_flags.map(riskFlagLabel).join(" · ")}
+        </p>
+      ) : null}
+    </li>
+  );
+}
+
 export function PatientDetailClient({ id }: { id: number }) {
   const { data, isLoading } = useMyPatient(id);
+  const requestAccess = useCreateFileAccessRequest();
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   if (isLoading) return <p>در حال بارگذاری…</p>;
   if (!data) return <p>مراجع پیدا نشد.</p>;
+
+  const reports = data.clinical_reports ?? [];
+  const otherCount = data.other_therapists_report_count ?? 0;
+  const pending = data.pending_file_access_request;
+  const showRequest = !data.has_full_file_access && otherCount > 0;
+
+  async function onRequest(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await requestAccess.mutateAsync({
+        patient: id,
+        reason: reason.trim(),
+      });
+      setReason("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ارسال درخواست ناموفق بود.");
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -122,6 +171,55 @@ export function PatientDetailClient({ id }: { id: number }) {
             <li className="py-2 text-[#1a2423]/50">نوبتی نیست.</li>
           ) : null}
         </ul>
+      </section>
+
+      <section className="space-y-3 rounded-lg border border-[#1a2423]/10 bg-white p-5 dark:border-white/10 dark:bg-[#121818]">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-bold">پرونده بالینی</h2>
+            <p className="mt-1 text-sm opacity-55">
+              {data.has_full_file_access
+                ? "دسترسی موقت به پرونده کامل تأیید شده است."
+                : "گزارش‌های سایر درمانگران به‌صورت پیش‌فرض پنهان است."}
+            </p>
+          </div>
+        </div>
+        <ul className="space-y-3 text-sm">
+          {reports.map((report) => (
+            <ClinicalReportCard key={report.id} report={report} />
+          ))}
+          {!reports.length ? (
+            <li className="text-[#1a2423]/50">گزارش بالینی قابل نمایش نیست.</li>
+          ) : null}
+        </ul>
+        {showRequest ? (
+          pending ? (
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              درخواست دسترسی {fileAccessStatusLabel(pending.status)} است.
+            </p>
+          ) : (
+            <form className="space-y-3 border-t border-[#1a2423]/8 pt-4 dark:border-white/10" onSubmit={onRequest}>
+              <label className="block text-sm">
+                <span className="mb-1 block opacity-60">دلیل درخواست دسترسی به پرونده</span>
+                <textarea
+                  required
+                  rows={3}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full rounded-md border border-[#1a2423]/15 bg-transparent px-3 py-2 dark:border-white/15"
+                />
+              </label>
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
+              <button
+                type="submit"
+                disabled={requestAccess.isPending}
+                className="rounded-md bg-[#1a2423] px-4 py-2 text-sm font-medium text-white disabled:opacity-40 dark:bg-primary dark:text-[#332B1A]"
+              >
+                درخواست دسترسی به پرونده
+              </button>
+            </form>
+          )
+        ) : null}
       </section>
 
       <section className="space-y-3 rounded-lg border border-[#1a2423]/10 bg-white p-5 dark:border-white/10 dark:bg-[#121818]">

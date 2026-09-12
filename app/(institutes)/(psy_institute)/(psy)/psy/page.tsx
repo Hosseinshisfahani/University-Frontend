@@ -3,6 +3,7 @@ import {
   PsyClosingCta,
   PsyHero,
   PsyHow,
+  PsyNewsSlider,
   PsyServices,
 } from "@/app/(institutes)/(psy_institute)/(psy)/_components/landing";
 
@@ -16,6 +17,7 @@ export default function PsyLandingPage() {
   return (
     <>
       <PsyHero />
+      <PsyNewsSlider />
       <PsyApproach />
       <PsyServices />
       <PsyHow />

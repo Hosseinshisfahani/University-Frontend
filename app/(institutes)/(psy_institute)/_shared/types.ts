@@ -88,6 +88,71 @@ export type SessionNote = {
   updated_at: string;
 };
 
+export type ClinicalReport = {
+  id: number;
+  appointment: number;
+  appointment_starts_at: string;
+  session_type_name: string;
+  therapist: number;
+  therapist_name: string;
+  patient: number;
+  patient_name: string;
+  summary: string;
+  assessment: string;
+  treatment_plan: string;
+  risk_flags: string[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type ClinicalReportWrite = {
+  appointment: number;
+  summary: string;
+  assessment: string;
+  treatment_plan: string;
+  risk_flags?: string[];
+};
+
+export type FileAccessRequestStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "expired"
+  | string;
+
+export type FileAccessRequest = {
+  id: number;
+  therapist: number;
+  therapist_name: string;
+  patient: number;
+  patient_name: string;
+  status: FileAccessRequestStatus;
+  reason: string;
+  decision_note: string;
+  granted_by: number | null;
+  granted_by_name: string | null;
+  decided_at: string | null;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MissingReportAppointment = {
+  id: number;
+  patient: number;
+  patient_name: string;
+  therapist: number;
+  therapist_name: string;
+  session_type_name: string;
+  starts_at: string;
+  ends_at: string;
+};
+
+export type MissingReportsPayload = {
+  count: number;
+  items: MissingReportAppointment[];
+};
+
 export type PsychometricField = {
   id: string;
   type: "likert" | "text" | "single" | "multi" | string;
@@ -212,6 +277,10 @@ export type TherapistPatientDetail = TherapistPatientSummary & {
   recent_appointments: Appointment[];
   recent_notes: SessionNote[];
   recent_responses: PsychometricResponse[];
+  clinical_reports: ClinicalReport[];
+  has_full_file_access: boolean;
+  pending_file_access_request: FileAccessRequest | null;
+  other_therapists_report_count: number;
 };
 
 export type TherapistFinanceAppointment = {
@@ -380,4 +449,27 @@ export type BlogPostPage = {
   next: string | null;
   previous: string | null;
   results: BlogPost[];
+};
+
+export type NewsSlide = {
+  id: number;
+  title: string;
+  body: string;
+  image: string | null;
+  link_url: string;
+  link_label: string;
+  sort_order: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type NewsSlideWrite = {
+  title: string;
+  body?: string;
+  image?: string | null;
+  link_url?: string;
+  link_label?: string;
+  sort_order?: number;
+  is_published?: boolean;
 };

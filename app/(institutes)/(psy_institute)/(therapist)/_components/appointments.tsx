@@ -16,7 +16,6 @@ import {
   useDeleteSessionNote,
   useMyAppointments,
   useSessionNotes,
-  useSetMeetingLink,
   useUpdateSessionNote,
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
 import type { Appointment, SessionNote } from "@/app/(institutes)/(psy_institute)/_shared/types";
@@ -221,17 +220,11 @@ function SessionNotesPanel({ appointmentId }: { appointmentId: number }) {
 
 export function TherapistAppointmentDetail({ id }: { id: number }) {
   const { data: item, isLoading } = useAppointment(id);
-  const setLink = useSetMeetingLink();
   const complete = useCompleteAppointment();
-  const [meetingLink, setMeetingLink] = useState("");
-  const [linkSaved, setLinkSaved] = useState(false);
-  const [linkError, setLinkError] = useState<string | null>(null);
   const [completeError, setCompleteError] = useState<string | null>(null);
 
   if (isLoading) return <p>در حال بارگذاری…</p>;
   if (!item) return <p>نوبت پیدا نشد.</p>;
-
-  const linkValue = meetingLink || item.meeting_link || "";
 
   return (
     <div className="space-y-6">
@@ -279,49 +272,28 @@ export function TherapistAppointmentDetail({ id }: { id: number }) {
       </div>
 
       {item.session_type_modality === "online" || item.meeting_link ? (
-        <form
-          className="space-y-3 rounded-lg border border-[#1a2423]/10 bg-white p-5 dark:border-white/10 dark:bg-[#121818]"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setLinkError(null);
-            setLinkSaved(false);
-            try {
-              await setLink.mutateAsync({
-                id: item.id,
-                meetingLink: linkValue.trim(),
-              });
-              setLinkSaved(true);
-            } catch {
-              setLinkError("ذخیره لینک جلسه ناموفق بود.");
-            }
-          }}
-        >
+        <section className="space-y-3 rounded-lg border border-[#1a2423]/10 bg-white p-5 dark:border-white/10 dark:bg-[#121818]">
           <h2 className="font-bold">لینک جلسه آنلاین</h2>
-          <p className="text-sm text-[#1a2423]/55 dark:text-white/50">
-            لینک Google Meet یا سرویس مشابه را برای مراجع قرار دهید.
-          </p>
-          <input
-            type="url"
-            value={linkValue}
-            onChange={(e) => {
-              setMeetingLink(e.target.value);
-              setLinkSaved(false);
-            }}
-            placeholder="https://meet.google.com/..."
-            className="w-full rounded-md border border-[#1a2423]/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
-          />
-          {linkError ? <p className="text-sm text-red-600">{linkError}</p> : null}
-          {linkSaved ? (
-            <p className="text-sm text-emerald-700 dark:text-emerald-400">ذخیره شد.</p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={setLink.isPending}
-            className="rounded-md bg-[#1a2423] px-4 py-2 text-sm font-medium text-white disabled:opacity-60 dark:bg-primary dark:text-[#332B1A]"
-          >
-            ذخیره لینک
-          </button>
-        </form>
+          {item.meeting_link ? (
+            <>
+              <p className="break-all text-sm text-[#1a2423]/70 dark:text-white/70">
+                {item.meeting_link}
+              </p>
+              <a
+                href={item.meeting_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-md bg-[#1a2423] px-4 py-2 text-sm font-medium text-white dark:bg-primary dark:text-[#332B1A]"
+              >
+                ورود به جلسه آنلاین
+              </a>
+            </>
+          ) : (
+            <p className="text-sm text-[#1a2423]/55 dark:text-white/50">
+              لینک جلسه هنوز توسط مدیریت ثبت نشده است.
+            </p>
+          )}
+        </section>
       ) : null}
 
       <SessionNotesPanel appointmentId={item.id} />

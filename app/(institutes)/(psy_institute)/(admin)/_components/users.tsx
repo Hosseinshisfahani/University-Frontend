@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { formatIrr } from "@/features/finance/types";
 import {
+  formatJalaliDateTime,
   formatJalaliFriendlyDate,
   formatJalaliTime,
 } from "@/lib/datetime/jalali";
@@ -12,6 +13,7 @@ import { useParams } from "next/navigation";
 import {
   appointmentStatusLabel,
   psychometricResponseStatusLabel,
+  riskFlagLabel,
 } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
 
 export function PatientsDirectoryClient() {
@@ -203,6 +205,37 @@ export function PatientSummaryClient() {
           ))}
           {!p.recent_responses.length ? (
             <li className="opacity-50">پاسخی نیست.</li>
+          ) : null}
+        </ul>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="font-bold">سوابق بالینی (پرونده اصلی)</h2>
+        <ul className="space-y-2 text-sm">
+          {(p.clinical_reports ?? []).map((report) => (
+            <li
+              key={report.id}
+              className="rounded-md border border-[#0f1a1c]/10 bg-white px-3 py-3 dark:border-white/10 dark:bg-[#0f1618]"
+            >
+              <p className="font-medium">
+                {report.therapist_name}
+                <span className="mr-2 text-xs opacity-55">
+                  {report.session_type_name} ·{" "}
+                  {formatJalaliDateTime(report.appointment_starts_at)}
+                </span>
+              </p>
+              <p className="mt-2 leading-7">{report.summary}</p>
+              <p className="mt-1 leading-7 opacity-80">{report.assessment}</p>
+              <p className="mt-1 leading-7 opacity-80">{report.treatment_plan}</p>
+              {report.risk_flags.length ? (
+                <p className="mt-2 text-xs text-red-700">
+                  {report.risk_flags.map(riskFlagLabel).join(" · ")}
+                </p>
+              ) : null}
+            </li>
+          ))}
+          {!(p.clinical_reports ?? []).length ? (
+            <li className="text-sm opacity-50">گزارش بالینی ثبت نشده است.</li>
           ) : null}
         </ul>
       </section>

@@ -475,15 +475,27 @@ export function AppointmentDetailClient({ id }: { id: number }) {
         </p>
         <p className="mt-2 text-sm">{statusLabel(item.status)}</p>
         <p className="mt-2 text-sm">{formatIrr(item.price_snapshot)}</p>
-        {canJoin ? (
-          <a
-            href={item.meeting_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex rounded-lg bg-primary px-5 py-3 text-sm font-medium text-[#332B1A]"
-          >
-            ورود به جلسه آنلاین
-          </a>
+        {item.session_type_modality === "online" || item.meeting_link ? (
+          <div className="mt-4 space-y-2">
+            <p className="text-sm font-medium">لینک جلسه آنلاین</p>
+            {canJoin ? (
+              <>
+                <p className="break-all text-sm text-foreground/70">{item.meeting_link}</p>
+                <a
+                  href={item.meeting_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex rounded-lg bg-primary px-5 py-3 text-sm font-medium text-[#332B1A]"
+                >
+                  ورود به جلسه آنلاین
+                </a>
+              </>
+            ) : (
+              <p className="text-sm text-foreground/55">
+                لینک جلسه هنوز توسط مدیریت ثبت نشده است.
+              </p>
+            )}
+          </div>
         ) : null}
         {isOpenAppointmentStatus(item.status) ? (
           <button

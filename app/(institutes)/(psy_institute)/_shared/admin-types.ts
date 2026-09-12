@@ -1,4 +1,4 @@
-import type { Appointment, PsychometricResponse, Therapist } from "./types";
+import type { Appointment, ClinicalReport, PsychometricResponse, Therapist } from "./types";
 
 export type Paginated<T> = {
   count: number;
@@ -38,6 +38,7 @@ export type AdminPatientDetail = AdminPatientSummary & {
   birth_date: string | null;
   recent_appointments: Appointment[];
   recent_responses: PsychometricResponse[];
+  clinical_reports: ClinicalReport[];
 };
 
 export type AdminTherapistSummary = Therapist & {

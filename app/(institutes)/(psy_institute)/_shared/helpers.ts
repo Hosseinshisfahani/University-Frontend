@@ -99,3 +99,23 @@ export function leaveStatusLabel(status: string): string {
   };
   return map[status] ?? status;
 }
+
+export function fileAccessStatusLabel(status: string): string {
+  const map: Record<string, string> = {
+    pending: "در انتظار بررسی",
+    approved: "تأیید شده",
+    rejected: "رد شده",
+    expired: "منقضی شده",
+  };
+  return map[status] ?? status;
+}
+
+export function riskFlagLabel(flag: string): string {
+  const map: Record<string, string> = {
+    suicidal_ideation: "افکار خودکشی",
+    self_harm: "خودآسیب‌رسانی",
+    violence_risk: "خطر خشونت",
+    substance_use: "مصرف مواد",
+  };
+  return map[flag] ?? flag;
+}

@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { financeKeys } from "@/features/finance/hooks";
 import { psyApi } from "./api";
-import type { AvailabilityWrite, ExceptionWrite, LeaveRequestWrite } from "./types";
+import type { AvailabilityWrite, ExceptionWrite, LeaveRequestWrite, ClinicalReportWrite } from "./types";
 
 export const psyKeys = {
   therapists: ["psy", "therapists"] as const,
@@ -13,6 +13,9 @@ export const psyKeys = {
   appointments: ["psy", "appointments"] as const,
   appointment: (id: number) => ["psy", "appointments", id] as const,
   notes: ["psy", "notes"] as const,
+  clinicalReports: ["psy", "clinical-reports"] as const,
+  missingReports: ["psy", "clinical-reports", "missing"] as const,
+  fileAccessRequests: ["psy", "file-access-requests"] as const,
   forms: ["psy", "forms"] as const,
   form: (slug: string) => ["psy", "forms", slug] as const,
   responses: ["psy", "responses"] as const,
@@ -32,6 +35,8 @@ export const psyKeys = {
   workshopRoster: (slug: string) => ["psy", "workshops", slug, "roster"] as const,
   blogPosts: (page?: number) => ["psy", "blog", page ?? 1] as const,
   blogPost: (slug: string) => ["psy", "blog", "detail", slug] as const,
+  newsSlides: ["psy", "news"] as const,
+  newsSlide: (id: number) => ["psy", "news", id] as const,
   therapistPublicReviews: (id: number) =>
     ["psy", "therapists", id, "reviews"] as const,
   therapistReviews: ["psy", "therapist", "reviews"] as const,
@@ -146,6 +151,7 @@ export function useCompleteAppointment() {
     onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: psyKeys.appointments });
       qc.invalidateQueries({ queryKey: psyKeys.appointment(id) });
+      qc.invalidateQueries({ queryKey: psyKeys.missingReports });
       qc.invalidateQueries({ queryKey: ["psy-admin", "appointments"] });
     },
   });
@@ -229,6 +235,60 @@ export function useDeleteSessionNote() {
     mutationFn: (id: number) => psyApi.deleteSessionNote(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: psyKeys.notes });
+    },
+  });
+}
+
+export function useMissingReports() {
+  return useQuery({
+    queryKey: psyKeys.missingReports,
+    queryFn: () => psyApi.missingReports(),
+    staleTime: 15_000,
+    refetchInterval: 60_000,
+  });
+}
+
+export function useCreateClinicalReport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ClinicalReportWrite) => psyApi.createClinicalReport(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.missingReports });
+      qc.invalidateQueries({ queryKey: psyKeys.clinicalReports });
+      qc.invalidateQueries({ queryKey: psyKeys.patients });
+    },
+  });
+}
+
+export function useUpdateClinicalReport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: {
+      id: number;
+      data: Partial<Omit<ClinicalReportWrite, "appointment">>;
+    }) => psyApi.updateClinicalReport(args.id, args.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.clinicalReports });
+      qc.invalidateQueries({ queryKey: psyKeys.patients });
+    },
+  });
+}
+
+export function useMyFileAccessRequests() {
+  return useQuery({
+    queryKey: psyKeys.fileAccessRequests,
+    queryFn: () => psyApi.fileAccessRequests(),
+  });
+}
+
+export function useCreateFileAccessRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { patient: number; reason?: string }) =>
+      psyApi.createFileAccessRequest(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.fileAccessRequests });
+      qc.invalidateQueries({ queryKey: psyKeys.patients });
     },
   });
 }
@@ -683,6 +743,55 @@ export function useDeleteBlogPost() {
     mutationFn: (slug: string) => psyApi.deleteBlogPost(slug),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["psy", "blog"] });
+    },
+  });
+}
+
+export function useNewsSlides() {
+  return useQuery({
+    queryKey: psyKeys.newsSlides,
+    queryFn: () => psyApi.newsSlides(),
+  });
+}
+
+export function useNewsSlide(id: number) {
+  return useQuery({
+    queryKey: psyKeys.newsSlide(id),
+    queryFn: () => psyApi.newsSlide(id),
+    enabled: id > 0,
+  });
+}
+
+export function useCreateNewsSlide() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: psyApi.createNewsSlide,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.newsSlides });
+    },
+  });
+}
+
+export function useUpdateNewsSlide() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: {
+      id: number;
+      data: Parameters<typeof psyApi.updateNewsSlide>[1];
+    }) => psyApi.updateNewsSlide(vars.id, vars.data),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: psyKeys.newsSlide(vars.id) });
+      qc.invalidateQueries({ queryKey: psyKeys.newsSlides });
+    },
+  });
+}
+
+export function useDeleteNewsSlide() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => psyApi.deleteNewsSlide(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.newsSlides });
     },
   });
 }

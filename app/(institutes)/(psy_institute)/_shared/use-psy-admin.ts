@@ -38,6 +38,8 @@ export const adminKeys = {
   financeRevenue: (params: Record<string, unknown>) =>
     ["psy-admin", "finance", "revenue", params] as const,
   reviews: (status?: string) => ["psy-admin", "reviews", status] as const,
+  fileAccessRequests: (status?: string) =>
+    ["psy-admin", "file-access", status] as const,
 };
 
 export function useAdminOverview() {
@@ -301,6 +303,19 @@ export function useDeleteAdminException(therapistId: number) {
   });
 }
 
+export function useAdminSetMeetingLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: number; meetingLink: string }) =>
+      adminApi.setMeetingLink(args.id, args.meetingLink),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "appointments"] });
+      qc.invalidateQueries({ queryKey: psyKeys.appointments });
+      qc.invalidateQueries({ queryKey: psyKeys.appointment(vars.id) });
+    },
+  });
+}
+
 export function useAdminBookAppointment() {
   const qc = useQueryClient();
   return useMutation({
@@ -347,6 +362,37 @@ export function useRejectLeaveRequest() {
       adminApi.rejectLeaveRequest(args.id, args.adminNote ?? ""),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["psy-admin", "leave"] });
+    },
+  });
+}
+
+export function useAdminFileAccessRequests(status?: string) {
+  return useQuery({
+    queryKey: adminKeys.fileAccessRequests(status),
+    queryFn: () => adminApi.fileAccessRequests({ status: status || undefined }),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useApproveFileAccessRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: number; accessDays?: number }) =>
+      adminApi.approveFileAccessRequest(args.id, args.accessDays ?? 7),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "file-access"] });
+      qc.invalidateQueries({ queryKey: ["psy-admin", "patients"] });
+    },
+  });
+}
+
+export function useRejectFileAccessRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: number; decisionNote?: string }) =>
+      adminApi.rejectFileAccessRequest(args.id, args.decisionNote ?? ""),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "file-access"] });
     },
   });
 }

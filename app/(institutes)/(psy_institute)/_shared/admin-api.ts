@@ -10,6 +10,8 @@ import type {
   TherapistAvailability,
   TherapistReview,
   TherapistSessionOffer,
+  FileAccessRequest,
+  MissingReportsPayload,
 } from "./types";
 import type {
   AdminOverview,
@@ -236,6 +238,12 @@ export const adminApi = {
     return apiClient.post("/psy/admin/appointments/", data);
   },
 
+  setMeetingLink(id: number, meetingLink: string): Promise<Appointment> {
+    return apiClient.post(`/psy/appointments/${id}/set_meeting_link/`, {
+      meeting_link: meetingLink,
+    });
+  },
+
   leaveRequests(params?: {
     status?: string;
     therapist?: number;
@@ -260,6 +268,32 @@ export const adminApi = {
     return apiClient.post(`/psy/admin/leave-requests/${id}/reject/`, {
       admin_note: adminNote,
     });
+  },
+
+  fileAccessRequests(params?: { status?: string }): Promise<FileAccessRequest[]> {
+    return apiClient.get(`/psy/file-access-requests/${qs(params ?? {})}`);
+  },
+
+  approveFileAccessRequest(
+    id: number,
+    accessDays = 7,
+  ): Promise<FileAccessRequest> {
+    return apiClient.post(`/psy/file-access-requests/${id}/approve/`, {
+      access_days: accessDays,
+    });
+  },
+
+  rejectFileAccessRequest(
+    id: number,
+    decisionNote = "",
+  ): Promise<FileAccessRequest> {
+    return apiClient.post(`/psy/file-access-requests/${id}/reject/`, {
+      decision_note: decisionNote,
+    });
+  },
+
+  missingReports(): Promise<MissingReportsPayload> {
+    return apiClient.get("/psy/clinical-reports/missing/");
   },
 
   reviews(params?: { status?: string }): Promise<TherapistReview[]> {

@@ -50,6 +50,7 @@ Layout: `PsyHeader` + `PsyFooter` — `app/(institutes)/(psy_institute)/(psy)/la
 | URL | File | Notes |
 |---|---|---|
 | `/psy` | `.../(psy)/psy/page.tsx` | Center landing |
+| `/psy/services` | `.../(psy)/psy/services/page.tsx` | All counseling services |
 | `/psy/therapists` | `.../(psy)/psy/therapists/page.tsx` | Therapist directory |
 | `/psy/therapists/[id]` | `.../(psy)/psy/therapists/[id]/page.tsx` | Therapist profile |
 | `/psy/tests` | `.../(psy)/psy/tests/page.tsx` | Public psychometric catalog |
@@ -97,6 +98,7 @@ Guard: `TherapistGuard` · shell: `TherapistShell`
 | `/therapist/appointments` | `.../therapist/appointments/page.tsx` | Appointments |
 | `/therapist/appointments/[id]` | `.../therapist/appointments/[id]/page.tsx` | Appointment detail |
 | `/therapist/finance` | `.../therapist/finance/page.tsx` | Own earnings (read-only) |
+| `/therapist/clinical-reports` | `.../therapist/clinical-reports/page.tsx` | Mandatory clinical report inbox |
 | `/therapist/reviews` | `.../therapist/reviews/page.tsx` | Approved patient comments |
 | `/therapist/patients` | `.../therapist/patients/page.tsx` | Patients |
 | `/therapist/patients/[id]` | `.../therapist/patients/[id]/page.tsx` | Patient summary |
@@ -120,6 +122,7 @@ Guard: `AdminGuard` · shell: `AdminShell`
 | `/admin/appointments/[id]` | `.../admin/appointments/[id]/page.tsx` | Appointment detail |
 | `/admin/schedule` | `.../admin/schedule/page.tsx` | Master calendar |
 | `/admin/leave` | `.../admin/leave/page.tsx` | Leave request inbox |
+| `/admin/file-access` | `.../admin/file-access/page.tsx` | Patient file access request inbox |
 | `/admin/reviews` | `.../admin/reviews/page.tsx` | Review moderation inbox |
 | `/admin/finance` | `.../admin/finance/page.tsx` | Finance |
 | `/admin/users/patients` | `.../admin/users/patients/page.tsx` | Patients directory |
@@ -133,6 +136,9 @@ Guard: `AdminGuard` · shell: `AdminShell`
 | `/admin/blog` | `.../admin/blog/page.tsx` | Posts |
 | `/admin/blog/new` | `.../admin/blog/new/page.tsx` | New post |
 | `/admin/blog/[slug]` | `.../admin/blog/[slug]/page.tsx` | Edit post |
+| `/admin/news` | `.../admin/news/page.tsx` | Landing news slides |
+| `/admin/news/new` | `.../admin/news/new/page.tsx` | New slide |
+| `/admin/news/[id]` | `.../admin/news/[id]/page.tsx` | Edit slide |
 
 ---
 

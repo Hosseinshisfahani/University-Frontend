@@ -3,3 +3,4 @@ import { AppointmentsAgenda } from "@/app/(institutes)/(psy_institute)/(therapis
 export default function TherapistAppointmentsPage() {
   return <AppointmentsAgenda />;
 }
+

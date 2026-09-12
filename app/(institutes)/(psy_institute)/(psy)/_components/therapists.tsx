@@ -10,6 +10,94 @@ import { formatJalaliFriendlyDate } from "@/lib/datetime/jalali";
 import { useAuthStore } from "@/features/auth/store";
 import { isPsyPatient } from "@/features/auth/types";
 
+const SERVICE_FILTERS: Record<
+  string,
+  { title: string; keywords: string[] }
+> = {
+  academic: {
+    title: "مشاوره تحصیلی",
+    keywords: ["تحصیلی", "استعداد", "روان‌سنجی", "کنکور"],
+  },
+  career: {
+    title: "مشاوره شغلی",
+    keywords: ["شغلی", "حرفه‌ای", "بازار کار", "توسعه فردی"],
+  },
+  premarital: {
+    title: "مشاوره پیش از ازدواج",
+    keywords: ["پیش از ازدواج", "ازدواج", "زوج", "روابط"],
+  },
+  family: {
+    title: "مشاوره خانواده",
+    keywords: ["خانواده", "والد", "روابط", "زوج"],
+  },
+  psychotherapy: {
+    title: "روان‌درمانی",
+    keywords: [
+      "روان‌درمانی",
+      "بالینی",
+      "اضطراب",
+      "افسردگی",
+      "وسواس",
+      "تروما",
+    ],
+  },
+  divorce: {
+    title: "مشاوره طلاق",
+    keywords: ["طلاق", "زوج", "خانواده", "روابط"],
+  },
+  individual: {
+    title: "مشاوره فردی",
+    keywords: ["فردی", "اضطراب", "افسردگی", "مهارت‌های مقابله‌ای", "خودشناسی"],
+  },
+  "child-adolescent": {
+    title: "مشاوره کودک و نوجوان",
+    keywords: ["کودک", "نوجوان", "فرزندپروری", "بازی‌درمانی"],
+  },
+  psychiatry: {
+    title: "روان‌پزشکی و دارودرمانی",
+    keywords: ["روان‌پزشکی", "اعصاب و روان", "دارودرمانی"],
+  },
+  nutrition: {
+    title: "مشاوره تغذیه و رژیم‌درمانی",
+    keywords: ["تغذیه", "رژیم", "وزن"],
+  },
+  sports: {
+    title: "مشاوره ورزشی",
+    keywords: ["ورزشی", "ورزش", "عملکرد ورزشی"],
+  },
+  cultural: {
+    title: "مشاوره فرهنگی و اعتقادی",
+    keywords: ["فرهنگی", "اعتقادی", "مذهبی", "معنوی"],
+  },
+  legal: {
+    title: "مشاوره حقوقی",
+    keywords: ["حقوقی", "حقوق", "قانونی"],
+  },
+};
+
+function normalizeSearchText(value: string) {
+  return value
+    .replaceAll("ي", "ی")
+    .replaceAll("ك", "ک")
+    .replaceAll("\u200c", " ")
+    .toLocaleLowerCase("fa-IR");
+}
+
+function therapistMatchesService(
+  therapist: {
+    bio: string;
+    specialties: string[];
+  },
+  keywords: string[],
+) {
+  const searchable = normalizeSearchText(
+    [therapist.bio, ...(therapist.specialties ?? [])].join(" "),
+  );
+  return keywords.some((keyword) =>
+    searchable.includes(normalizeSearchText(keyword)),
+  );
+}
+
 function TherapistAvatar({
   name,
   id,
@@ -33,20 +121,40 @@ function TherapistAvatar({
   );
 }
 
-export function PsyTherapists() {
+export function PsyTherapists({ service }: { service?: string }) {
   const { data, isLoading } = useTherapists();
-  const therapists = (data ?? []).filter((t) => t.is_active && t.is_accepting_patients);
+  const serviceFilter = service ? SERVICE_FILTERS[service] : undefined;
+  const activeTherapists = (data ?? []).filter(
+    (t) => t.is_active && t.is_accepting_patients,
+  );
+  const therapists = serviceFilter
+    ? activeTherapists.filter((therapist) =>
+        therapistMatchesService(therapist, serviceFilter.keywords),
+      )
+    : activeTherapists;
 
   return (
     <div className="psy-root mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <header className="mb-10 max-w-2xl">
         <p className="text-sm font-medium text-[var(--psy-accent)]">درمانگران</p>
         <h1 className="title mt-2 text-3xl font-bold tracking-tight text-[var(--psy-ink)] sm:text-4xl">
-          درمانگران ما
+          {serviceFilter
+            ? `درمانگران مرتبط با ${serviceFilter.title}`
+            : "درمانگران ما"}
         </h1>
         <p className="mt-3 text-[var(--psy-muted)]">
-          با تیم مرکز آشنا شوید و مستقیم نوبت رزرو کنید.
+          {serviceFilter
+            ? "این درمانگران بر اساس تخصص‌های ثبت‌شده در پروفایلشان پیشنهاد شده‌اند."
+            : "با تیم مرکز آشنا شوید و مستقیم نوبت رزرو کنید."}
         </p>
+        {serviceFilter ? (
+          <Link
+            href="/psy/therapists"
+            className="mt-4 inline-flex rounded-full border border-[var(--psy-line)] px-4 py-2 text-sm font-medium text-[var(--psy-persian-blue)] hover:border-[var(--psy-persian-blue)]/40"
+          >
+            مشاهده همه درمانگران
+          </Link>
+        ) : null}
       </header>
 
       {isLoading ? (
@@ -80,7 +188,21 @@ export function PsyTherapists() {
         </ul>
       )}
       {!isLoading && !therapists.length ? (
-        <p className="text-[var(--psy-muted)]">درمانگر فعالی ثبت نشده است.</p>
+        <div className="rounded-2xl border border-[var(--psy-line)] bg-[var(--psy-surface)] p-6">
+          <p className="font-semibold text-[var(--psy-ink)]">
+            فعلاً درمانگری با این تخصص ثبت نشده است.
+          </p>
+          <p className="mt-2 text-sm leading-7 text-[var(--psy-muted)]">
+            می‌توانید همه درمانگران فعال را ببینید یا برای انتخاب مناسب با مرکز
+            تماس بگیرید.
+          </p>
+          <Link
+            href="/psy/therapists"
+            className="mt-4 inline-flex text-sm font-semibold text-[var(--psy-persian-blue)]"
+          >
+            مشاهده همه درمانگران ←
+          </Link>
+        </div>
       ) : null}
     </div>
   );

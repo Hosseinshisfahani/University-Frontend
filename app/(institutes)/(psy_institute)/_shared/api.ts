@@ -7,6 +7,10 @@ import type {
   ExceptionWrite,
   LeaveRequest,
   LeaveRequestWrite,
+  ClinicalReport,
+  ClinicalReportWrite,
+  FileAccessRequest,
+  MissingReportsPayload,
   PsychometricForm,
   PsychometricResponse,
   SessionNote,
@@ -25,6 +29,8 @@ import type {
   BlogPost,
   BlogPostPage,
   BlogPostWrite,
+  NewsSlide,
+  NewsSlideWrite,
   TherapistFinanceReport,
   TherapistReview,
   PublicTherapistReview,
@@ -149,6 +155,37 @@ export const psyApi = {
 
   deleteSessionNote(id: number): Promise<void> {
     return apiClient.delete(`/psy/session-notes/${id}/`);
+  },
+
+  clinicalReports(): Promise<ClinicalReport[]> {
+    return apiClient.get("/psy/clinical-reports/");
+  },
+
+  createClinicalReport(data: ClinicalReportWrite): Promise<ClinicalReport> {
+    return apiClient.post("/psy/clinical-reports/", data);
+  },
+
+  updateClinicalReport(
+    id: number,
+    data: Partial<Omit<ClinicalReportWrite, "appointment">>,
+  ): Promise<ClinicalReport> {
+    return apiClient.patch(`/psy/clinical-reports/${id}/`, data);
+  },
+
+  missingReports(): Promise<MissingReportsPayload> {
+    return apiClient.get("/psy/clinical-reports/missing/");
+  },
+
+  fileAccessRequests(params?: { status?: string }): Promise<FileAccessRequest[]> {
+    const q = params?.status ? `?status=${encodeURIComponent(params.status)}` : "";
+    return apiClient.get(`/psy/file-access-requests/${q}`);
+  },
+
+  createFileAccessRequest(data: {
+    patient: number;
+    reason?: string;
+  }): Promise<FileAccessRequest> {
+    return apiClient.post("/psy/file-access-requests/", data);
   },
 
   psychometricForms(): Promise<PsychometricForm[]> {
@@ -432,5 +469,28 @@ export const psyApi = {
 
   deleteBlogPost(slug: string): Promise<void> {
     return apiClient.delete(`/psy/blog/${slug}/`);
+  },
+
+  newsSlides(): Promise<NewsSlide[]> {
+    return apiClient.get("/psy/news/");
+  },
+
+  newsSlide(id: number): Promise<NewsSlide> {
+    return apiClient.get(`/psy/news/${id}/`);
+  },
+
+  createNewsSlide(data: NewsSlideWrite | FormData): Promise<NewsSlide> {
+    return apiClient.post("/psy/news/", data);
+  },
+
+  updateNewsSlide(
+    id: number,
+    data: Partial<NewsSlideWrite> | FormData,
+  ): Promise<NewsSlide> {
+    return apiClient.patch(`/psy/news/${id}/`, data);
+  },
+
+  deleteNewsSlide(id: number): Promise<void> {
+    return apiClient.delete(`/psy/news/${id}/`);
   },
 };

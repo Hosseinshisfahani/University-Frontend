@@ -5,6 +5,11 @@ export const metadata = {
   description: "آشنایی با درمانگران مرکز روان‌شناسی و رزرو نوبت.",
 };
 
-export default function PsyTherapistsPage() {
-  return <PsyTherapists />;
+export default async function PsyTherapistsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ service?: string }>;
+}) {
+  const { service } = await searchParams;
+  return <PsyTherapists service={service} />;
 }

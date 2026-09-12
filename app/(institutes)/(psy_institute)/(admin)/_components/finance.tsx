@@ -193,7 +193,6 @@ export default function FinanceOverviewClient() {
                 <th className="px-3 py-2 text-start">کاربر</th>
                 <th className="px-3 py-2 text-start">نوع</th>
                 <th className="px-3 py-2 text-start">مبلغ</th>
-                <th className="px-3 py-2 text-start">مرجع</th>
               </tr>
             ) : null}
             {tab === "sep" ? (
@@ -226,7 +225,6 @@ export default function FinanceOverviewClient() {
                       {formatLedgerDirection(row.direction)}
                     </td>
                     <td className="px-3 py-2">{formatIrr(row.amount)}</td>
-                    <td className="px-3 py-2 font-mono text-xs">{row.reference || "—"}</td>
                   </tr>
                 ))
               : null}

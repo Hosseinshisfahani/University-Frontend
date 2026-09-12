@@ -9,11 +9,13 @@ import { useAuthStore } from "@/features/auth/store";
 import { useLogout } from "@/features/auth/hooks";
 import ThemeToggle from "@/components/theme-toggle";
 import { isPsyTherapist } from "@/features/auth/types";
+import { useMissingReports } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
 
 const NAV = [
   { href: "/therapist/overview", label: "نمای کلی" },
   { href: "/therapist/schedule", label: "مرخصی" },
   { href: "/therapist/appointments", label: "نوبت‌ها" },
+  { href: "/therapist/clinical-reports", label: "گزارش‌های بالینی" },
   { href: "/therapist/finance", label: "گزارش مالی" },
   { href: "/therapist/reviews", label: "نظرات" },
   { href: "/therapist/patients", label: "مراجعان من" },
@@ -46,6 +48,21 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
         );
       })}
     </ul>
+  );
+}
+
+function MissingReportsBanner() {
+  const { data } = useMissingReports();
+  const count = data?.count ?? 0;
+  if (count < 1) return null;
+  const fa = new Intl.NumberFormat("fa-IR").format(count);
+  return (
+    <Link
+      href="/therapist/clinical-reports"
+      className="block bg-red-700 px-4 py-3 text-sm font-semibold text-white lg:px-8"
+    >
+      شما گزارش بالینی برای {fa} جلسه را ثبت نکرده‌اید
+    </Link>
   );
 }
 
@@ -102,6 +119,8 @@ export function TherapistShell({ children }: { children: React.ReactNode }) {
               </button>
             </div>
           </header>
+
+          <MissingReportsBanner />
 
           <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>
         </div>

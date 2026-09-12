@@ -20,6 +20,7 @@ import {
   useAdminTherapists,
   useAdminTherapistOffers,
   useAdminMoveAppointment,
+  useAdminSetMeetingLink,
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy-admin";
 import { useParams, useRouter } from "next/navigation";
 import { useAppointment, useCompleteAppointment, useTherapistSlots } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
@@ -389,7 +390,10 @@ export function AdminAppointmentDetailClient() {
   const cancel = useAdminCancelAppointment();
   const move = useAdminMoveAppointment();
   const complete = useCompleteAppointment();
+  const setLink = useAdminSetMeetingLink();
   const [slotId, setSlotId] = useState("");
+  const [meetingLink, setMeetingLink] = useState<string | null>(null);
+  const [linkSaved, setLinkSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const range = useMemo(() => {
@@ -456,7 +460,7 @@ export function AdminAppointmentDetailClient() {
         </div>
         <div>
           <dt className="opacity-50">لینک جلسه</dt>
-          <dd className="break-all">{appt.meeting_link || "—"}</dd>
+          <dd className="break-all">{appt.meeting_link || "هنوز ثبت نشده"}</dd>
         </div>
         {appt.refund_policy_applied ? (
           <div>
@@ -471,6 +475,53 @@ export function AdminAppointmentDetailClient() {
           </div>
         ) : null}
       </dl>
+
+      {appt.session_type_modality === "online" || appt.meeting_link ? (
+        <form
+          className="space-y-3 rounded-lg border border-[#0f1a1c]/10 bg-white p-5 dark:border-white/10 dark:bg-[#0f1618]"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setError(null);
+            setLinkSaved(false);
+            try {
+              await setLink.mutateAsync({
+                id: appt.id,
+                meetingLink: (meetingLink ?? appt.meeting_link ?? "").trim(),
+              });
+              setLinkSaved(true);
+            } catch (err) {
+              setError(
+                err instanceof Error ? err.message : "ذخیره لینک جلسه ناموفق بود.",
+              );
+            }
+          }}
+        >
+          <h2 className="font-bold">لینک جلسه آنلاین</h2>
+          <p className="text-sm opacity-60">
+            لینک Google Meet یا سرویس مشابه را برای درمانگر و مراجع قرار دهید.
+          </p>
+          <input
+            type="url"
+            value={meetingLink ?? appt.meeting_link ?? ""}
+            onChange={(e) => {
+              setMeetingLink(e.target.value);
+              setLinkSaved(false);
+            }}
+            placeholder="https://meet.google.com/..."
+            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+          />
+          {linkSaved ? (
+            <p className="text-sm text-teal-700 dark:text-teal-300">ذخیره شد.</p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={setLink.isPending}
+            className="rounded-md bg-[#0f1a1c] px-4 py-2 text-sm font-medium text-white disabled:opacity-40 dark:bg-teal-700"
+          >
+            {setLink.isPending ? "در حال ذخیره…" : "ذخیره لینک"}
+          </button>
+        </form>
+      ) : null}
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
 

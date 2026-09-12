@@ -170,6 +170,29 @@ html.dark .psy-hero-wash {
   position: relative;
 }
 
+.psy-news-swiper .swiper-pagination-bullet {
+  background: white;
+  opacity: 0.45;
+}
+
+.psy-news-swiper .swiper-pagination-bullet-active {
+  background: var(--psy-gold);
+  opacity: 1;
+}
+
+.psy-news-swiper .swiper-button-next,
+.psy-news-swiper .swiper-button-prev {
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.psy-news-swiper .swiper-button-next::after,
+.psy-news-swiper .swiper-button-prev::after {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
 @keyframes psy-fade-up {
   from {
     opacity: 0;
