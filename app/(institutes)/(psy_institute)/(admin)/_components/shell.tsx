@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/leave", label: "مرخصی‌ها" },
   { href: "/admin/file-access", label: "درخواست‌های دسترسی پرونده" },
   { href: "/admin/reviews", label: "نظرات" },
+  { href: "/admin/sms", label: "پیامک" },
   { href: "/admin/appointments", label: "نوبت‌ها" },
   { href: "/admin/workshops", label: "کارگاه‌ها" },
   { href: "/admin/blog", label: "مقالات" },

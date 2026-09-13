@@ -2,6 +2,7 @@ import { apiClient } from "@/lib/api/client";
 import type {
   LoginCredentials,
   LoginResponse,
+  PasswordResetConfirm,
   RegisterCredentials,
   User,
 } from "./types";
@@ -22,6 +23,18 @@ export const authApi = {
 
   register(credentials: RegisterCredentials): Promise<LoginResponse> {
     return apiClient.post("/auth/register/", credentials, { skipRefresh: true });
+  },
+
+  requestRegisterOtp(phone: string) {
+    return apiClient.post<{ detail: string }>("/auth/register/request-otp/", { phone });
+  },
+
+  requestPasswordReset(phone: string) {
+    return apiClient.post<{ detail: string }>("/auth/password-reset/request/", { phone });
+  },
+
+  confirmPasswordReset(payload: PasswordResetConfirm) {
+    return apiClient.post<{ detail: string }>("/auth/password-reset/confirm/", payload);
   },
 
   logout(): Promise<{ detail: string }> {

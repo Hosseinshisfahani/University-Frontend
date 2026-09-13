@@ -106,6 +106,29 @@ export type FinanceRevenueRow = {
   created_at: string;
 };
 
+export type SmsRecipient = {
+  id: number;
+  username: string;
+  display_name: string;
+  phone: string;
+  role: "patient" | "therapist" | "";
+};
+
+export type SmsMessageRow = {
+  id: number;
+  phone: string;
+  purpose: string;
+  status: string;
+  body: string;
+  user: number | null;
+  created_at: string;
+};
+
+export type SmsSendResult = {
+  sent: number;
+  skipped: number;
+};
+
 export type AppointmentListFilters = {
   page?: number;
   page_size?: number;

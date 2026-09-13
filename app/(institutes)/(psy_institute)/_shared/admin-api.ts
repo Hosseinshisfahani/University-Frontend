@@ -25,6 +25,9 @@ import type {
   FinanceRevenueRow,
   FinanceSummary,
   Paginated,
+  SmsMessageRow,
+  SmsRecipient,
+  SmsSendResult,
 } from "./admin-types";
 
 function qs(params: Record<string, string | number | undefined | null>) {
@@ -310,5 +313,26 @@ export const adminApi = {
     return apiClient.post(`/psy/admin/reviews/${id}/reject/`, {
       admin_note: adminNote,
     });
+  },
+
+  smsRecipients(params?: {
+    role?: string;
+    q?: string;
+  }): Promise<{ results: SmsRecipient[] }> {
+    return apiClient.get(`/notifications/admin/recipients/${qs(params ?? {})}`);
+  },
+
+  sendSms(payload: {
+    user_ids: number[];
+    message: string;
+  }): Promise<SmsSendResult> {
+    return apiClient.post("/notifications/admin/send/", payload);
+  },
+
+  smsMessages(params?: {
+    page?: number;
+    page_size?: number;
+  }): Promise<Paginated<SmsMessageRow>> {
+    return apiClient.get(`/notifications/admin/messages/${qs(params ?? {})}`);
   },
 };

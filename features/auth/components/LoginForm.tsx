@@ -75,6 +75,12 @@ export default function LoginForm() {
         />
       </label>
 
+      <p className="text-start text-sm">
+        <Link href="/forgot-password" className="font-medium text-foreground hover:text-primary">
+          فراموشی رمز عبور
+        </Link>
+      </p>
+
       {error ? (
         <p
           className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300"

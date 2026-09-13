@@ -40,6 +40,9 @@ export const adminKeys = {
   reviews: (status?: string) => ["psy-admin", "reviews", status] as const,
   fileAccessRequests: (status?: string) =>
     ["psy-admin", "file-access", status] as const,
+  smsRecipients: (role?: string, q?: string) =>
+    ["psy-admin", "sms", "recipients", role, q] as const,
+  smsMessages: (page?: number) => ["psy-admin", "sms", "messages", page] as const,
 };
 
 export function useAdminOverview() {
@@ -463,6 +466,37 @@ export function useFinancePayments(params: {
     queryKey: adminKeys.financePayments(params),
     queryFn: () => adminApi.financePayments(params),
     enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useAdminSmsRecipients(role: string, q: string) {
+  return useQuery({
+    queryKey: adminKeys.smsRecipients(role, q),
+    queryFn: () =>
+      adminApi.smsRecipients({
+        role: role || undefined,
+        q: q || undefined,
+      }),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useAdminSmsMessages(page: number) {
+  return useQuery({
+    queryKey: adminKeys.smsMessages(page),
+    queryFn: () => adminApi.smsMessages({ page, page_size: 25 }),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useAdminSmsSend() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { user_ids: number[]; message: string }) =>
+      adminApi.sendSms(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "sms", "messages"] });
+    },
   });
 }
 

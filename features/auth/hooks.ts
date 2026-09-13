@@ -6,7 +6,12 @@ import { useEffect } from "react";
 import { ApiError, apiClient } from "@/lib/api/client";
 import { authApi } from "./api";
 import { useAuthStore } from "./store";
-import type { LoginCredentials, RegisterCredentials, User } from "./types";
+import type {
+  LoginCredentials,
+  PasswordResetConfirm,
+  RegisterCredentials,
+  User,
+} from "./types";
 import { canAccessPortalPath, portalHomeForUser } from "./types";
 
 export const authKeys = {
@@ -159,6 +164,30 @@ export function useRegister() {
       setUser(user);
       queryClient.setQueryData(authKeys.me, user);
       redirectAfterAuth(router, user);
+    },
+  });
+}
+
+export function useRequestRegisterOtp() {
+  return useMutation({
+    mutationFn: (phone: string) => authApi.requestRegisterOtp(phone),
+  });
+}
+
+export function useRequestPasswordReset() {
+  return useMutation({
+    mutationFn: (phone: string) => authApi.requestPasswordReset(phone),
+  });
+}
+
+export function useConfirmPasswordReset() {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (payload: PasswordResetConfirm) =>
+      authApi.confirmPasswordReset(payload),
+    onSuccess: () => {
+      router.push("/login");
     },
   });
 }

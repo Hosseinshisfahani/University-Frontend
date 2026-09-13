@@ -3,21 +3,70 @@
 import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { ApiError } from "@/lib/api/client";
-import { useRegister, useRedirectIfAuthenticated } from "../hooks";
+import { toAsciiDigits } from "@/lib/phone";
+import {
+  useRedirectIfAuthenticated,
+  useRegister,
+  useRequestRegisterOtp,
+} from "../hooks";
+
+function fieldMessage(body: Record<string, unknown> | null, key: string): string {
+  const value = body?.[key];
+  if (typeof value === "string" && value) return value;
+  if (Array.isArray(value) && value[0]) return String(value[0]);
+  return "";
+}
 
 export default function RegisterForm() {
   const register = useRegister();
+  const requestOtp = useRequestRegisterOtp();
   const { isHolding } = useRedirectIfAuthenticated();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function parseRegisterError(err: unknown, fallback: string) {
+    if (err instanceof ApiError && err.status === 400) {
+      const body = err.body as Record<string, unknown> | null;
+      setError(
+        fieldMessage(body, "otp") ||
+          fieldMessage(body, "phone") ||
+          fieldMessage(body, "username") ||
+          fieldMessage(body, "password") ||
+          fieldMessage(body, "password_confirm") ||
+          fieldMessage(body, "detail") ||
+          fallback,
+      );
+    } else if (err instanceof ApiError) {
+      setError("ثبت نام ناموفق بود. دوباره تلاش کنید.");
+    } else {
+      setError("ارتباط با سرور برقرار نشد. دوباره تلاش کنید.");
+    }
+  }
+
+  async function sendOtp() {
+    setError(null);
+    try {
+      await requestOtp.mutateAsync(phone);
+      setOtpSent(true);
+    } catch (err) {
+      parseRegisterError(err, "ارسال کد ناموفق بود.");
+    }
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    if (!otpSent) {
+      await sendOtp();
+      return;
+    }
 
     if (password !== passwordConfirm) {
       setError("رمز عبور و تکرار آن یکسان نیستند.");
@@ -30,34 +79,16 @@ export default function RegisterForm() {
         password,
         password_confirm: passwordConfirm,
         email: email || undefined,
-        phone: phone || undefined,
+        phone,
+        otp,
       });
     } catch (err) {
-      if (err instanceof ApiError && err.status === 400) {
-        const body = err.body as Record<string, unknown> | null;
-        const detail =
-          (typeof body?.username === "object" &&
-            Array.isArray(body.username) &&
-            String(body.username[0])) ||
-          (typeof body?.password === "object" &&
-            Array.isArray(body.password) &&
-            String(body.password[0])) ||
-          (typeof body?.password_confirm === "object" &&
-            Array.isArray(body.password_confirm) &&
-            String(body.password_confirm[0])) ||
-          (typeof body?.detail === "string" && body.detail) ||
-          "اطلاعات ثبت نام نامعتبر است.";
-        setError(detail);
-      } else if (err instanceof ApiError) {
-        setError("ثبت نام ناموفق بود. دوباره تلاش کنید.");
-      } else {
-        setError("ارتباط با سرور برقرار نشد. دوباره تلاش کنید.");
-      }
+      parseRegisterError(err, "اطلاعات ثبت نام نامعتبر است.");
     }
   }
 
   const fieldClass =
-    "rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none transition focus:border-primary";
+    "rounded-lg border border-foreground/10 bg-background px-4 py-3 outline-none transition focus:border-primary disabled:cursor-not-allowed disabled:opacity-60";
 
   if (isHolding) {
     return (
@@ -83,6 +114,7 @@ export default function RegisterForm() {
           name="username"
           autoComplete="username"
           required
+          disabled={otpSent}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className={fieldClass}
@@ -102,13 +134,15 @@ export default function RegisterForm() {
       </label>
 
       <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium text-foreground/80">تلفن (اختیاری)</span>
+        <span className="font-medium text-foreground/80">تلفن</span>
         <input
           name="phone"
           type="tel"
           autoComplete="tel"
+          required
+          disabled={otpSent}
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(toAsciiDigits(e.target.value))}
           className={fieldClass}
         />
       </label>
@@ -119,7 +153,7 @@ export default function RegisterForm() {
           name="password"
           type="password"
           autoComplete="new-password"
-          required
+          required={otpSent}
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -133,13 +167,30 @@ export default function RegisterForm() {
           name="password_confirm"
           type="password"
           autoComplete="new-password"
-          required
+          required={otpSent}
           minLength={8}
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
           className={fieldClass}
         />
       </label>
+
+      {otpSent ? (
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="font-medium text-foreground/80">کد تایید</span>
+          <input
+            name="otp"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            required
+            minLength={6}
+            maxLength={6}
+            value={otp}
+            onChange={(e) => setOtp(toAsciiDigits(e.target.value))}
+            className={fieldClass}
+          />
+        </label>
+      ) : null}
 
       {error ? (
         <p
@@ -150,13 +201,23 @@ export default function RegisterForm() {
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={register.isPending}
-        className="rounded-lg bg-primary px-6 py-3.5 text-base font-medium text-[#332B1A]/90 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {register.isPending ? "در حال ثبت نام…" : "ثبت نام"}
-      </button>
+      {otpSent ? (
+        <button
+          type="submit"
+          disabled={register.isPending}
+          className="rounded-lg bg-primary px-6 py-3.5 text-base font-medium text-[#332B1A]/90 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {register.isPending ? "در حال ثبت نام…" : "ثبت نام"}
+        </button>
+      ) : (
+        <button
+          type="submit"
+          disabled={requestOtp.isPending}
+          className="rounded-lg bg-primary px-6 py-3.5 text-base font-medium text-[#332B1A]/90 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {requestOtp.isPending ? "در حال ارسال…" : "ارسال کد تایید"}
+        </button>
+      )}
 
       <p className="text-center text-sm text-foreground/60">
         حساب دارید؟{" "}

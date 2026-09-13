@@ -4,6 +4,7 @@ export type User = {
   email: string;
   first_name: string;
   last_name: string;
+  phone: string;
   is_staff: boolean;
   date_joined: string;
   groups: string[];
@@ -21,7 +22,17 @@ export type RegisterCredentials = {
   email?: string;
   first_name?: string;
   last_name?: string;
-  phone?: string;
+  phone: string;
+  otp: string;
+};
+
+export type PhonePayload = { phone: string };
+
+export type PasswordResetConfirm = {
+  phone: string;
+  otp: string;
+  password: string;
+  password_confirm: string;
 };
 
 export type LoginResponse = {

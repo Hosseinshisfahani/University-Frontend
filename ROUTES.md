@@ -6,7 +6,7 @@ Parentheses are **route groups** — they organize layouts and do **not** appear
 ```
 app/
   (public)/                         → university marketing
-  (auth)/                           → login / register
+  (auth)/                           → login / register / forgot-password
   (institutes)/(psy_institute)/
     _shared/                        → institute kernel (api, types, hooks, CSS)
     (psy)/                          → psychology center public site
@@ -40,6 +40,7 @@ Layout: platform auth shell (no institute CSS) — `app/(auth)/layout.tsx`
 |---|---|
 | `/login` | `app/(auth)/login/page.tsx` |
 | `/register` | `app/(auth)/register/page.tsx` |
+| `/forgot-password` | `app/(auth)/forgot-password/page.tsx` |
 
 ---
 
@@ -124,6 +125,7 @@ Guard: `AdminGuard` · shell: `AdminShell`
 | `/admin/leave` | `.../admin/leave/page.tsx` | Leave request inbox |
 | `/admin/file-access` | `.../admin/file-access/page.tsx` | Patient file access request inbox |
 | `/admin/reviews` | `.../admin/reviews/page.tsx` | Review moderation inbox |
+| `/admin/sms` | `.../admin/sms/page.tsx` | Manual SMS inbox |
 | `/admin/finance` | `.../admin/finance/page.tsx` | Finance |
 | `/admin/users/patients` | `.../admin/users/patients/page.tsx` | Patients directory |
 | `/admin/users/patients/[id]` | `.../admin/users/patients/[id]/page.tsx` | Patient summary |
