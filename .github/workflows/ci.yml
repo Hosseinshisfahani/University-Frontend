@@ -51,8 +51,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/university-frontend:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/university-frontend:latest
+            ghcr.io/hosseinshisfahani/university-frontend:${{ github.sha }}
+            ghcr.io/hosseinshisfahani/university-frontend:latest
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=/api/v1
             NEXT_PUBLIC_UNIVERSITY_HOST=${{ vars.UNIVERSITY_HOST }}
