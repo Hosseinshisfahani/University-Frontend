@@ -6,8 +6,12 @@ import { useEffect, useState } from "react";
 import ThemeToggle from "@/components/theme-toggle";
 import MobileNav from "./MobileNav";
 
+const PSY_ORIGIN = process.env.NEXT_PUBLIC_PSY_ORIGIN?.replace(/\/$/, "") ?? "";
+const centersHref = PSY_ORIGIN || "/psy";
+const loginHref = PSY_ORIGIN ? `${PSY_ORIGIN}/login` : "/login";
+
 const navItems = [
-  { href: "/psy", label: "مراکز" },
+  { href: centersHref, label: "مراکز" },
   { href: "/#think-tanks", label: "اندیشکدگان" },
   { href: "/#student", label: "دانشجویی" },
   { href: "/#intro", label: "دانشگاه" },
@@ -66,7 +70,7 @@ export default function Header() {
           <div className="col-start-3 row-start-1 hidden shrink-0 items-center justify-self-end gap-3 lg:flex">
             <ThemeToggle className="border-white/20 text-white hover:bg-white/10" />
             <Link
-              href="/#"
+              href={loginHref}
               title="ورود از طریق مراکز"
               className="whitespace-nowrap rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-[#332B1A] shadow-[0_0_24px_rgba(229,194,115,0.4)] transition duration-200 hover:brightness-110 hover:shadow-[0_0_32px_rgba(229,194,115,0.55)]"
             >

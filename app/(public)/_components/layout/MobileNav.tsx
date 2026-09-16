@@ -9,8 +9,12 @@ import {
 import { HiBars3, HiXMark } from "react-icons/hi2";
 import ThemeToggle from "@/components/theme-toggle";
 
+const PSY_ORIGIN = process.env.NEXT_PUBLIC_PSY_ORIGIN?.replace(/\/$/, "") ?? "";
+const centersHref = PSY_ORIGIN || "/psy";
+const loginHref = PSY_ORIGIN ? `${PSY_ORIGIN}/login` : "/login";
+
 const links = [
-  { href: "/psy", label: "مراکز" },
+  { href: centersHref, label: "مراکز" },
   { href: "/#think-tanks", label: "اندیشکدگان" },
   { href: "/#student", label: "دانشجویی" },
   { href: "/#intro", label: "دانشگاه" },
@@ -60,7 +64,7 @@ export default function MobileNav() {
             ))}
           </ul>
           <Link
-            href="/psy"
+            href={loginHref}
             title="ورود از طریق مراکز"
             onClick={() => setOpen(false)}
             className="mt-auto rounded-full bg-primary px-5 py-3 text-center text-sm font-semibold text-[#332B1A] shadow-[0_0_24px_rgba(229,194,115,0.35)] select-none"
