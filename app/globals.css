@@ -34,13 +34,6 @@ html.dark {
     color-scheme: dark;
 }
 
-@font-face {
-    font-family: 'ElMessiri';
-    src: url('/fonts/ElMessiri-Bold.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-}
-
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -55,7 +48,7 @@ body {
 }
 
 .title {
-    font-family: 'ElMessiri', sans-serif;
+    font-family: var(--font-elmessiri), sans-serif;
 }
 
 .rtl {

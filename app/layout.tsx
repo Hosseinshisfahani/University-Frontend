@@ -16,6 +16,13 @@ const vazirmatn = localFont({
   variable: "--font-vazirmatn",
 });
 
+const elMessiri = localFont({
+  src: "../public/fonts/ElMessiri-Bold.ttf",
+  weight: "400",
+  display: "swap",
+  variable: "--font-elmessiri",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://khunamun-edu.com"),
   title: {
@@ -56,7 +63,7 @@ export default function RootLayout({
     <html
       lang="fa"
       dir="rtl"
-      className={`${vazirmatn.variable} h-full antialiased`}
+      className={`${vazirmatn.variable} ${elMessiri.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full rtl" suppressHydrationWarning>
