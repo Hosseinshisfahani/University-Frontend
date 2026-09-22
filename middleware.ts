@@ -22,6 +22,7 @@ function isSharedPath(pathname: string): boolean {
     "/forgot-password",
     "/_next",
     "/static",
+    "/fonts",
   ];
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
@@ -91,6 +92,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|fonts/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|ttf|woff|woff2)$).*)",
   ],
 };
