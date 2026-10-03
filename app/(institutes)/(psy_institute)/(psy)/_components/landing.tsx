@@ -61,29 +61,18 @@ export function PsyHero() {
           </dl>
         </div>
 
-        <div className="psy-fade-up relative hidden min-h-[520px] items-center justify-center lg:flex [animation-delay:180ms]">
-          <div className="psy-mosque-dome absolute inset-x-10 top-2 h-64" aria-hidden />
-          <div className="psy-arch-card relative w-full max-w-sm overflow-hidden p-7 text-center">
-            <div className="psy-tile-piece mx-auto">
-              <Image
-                src="/psy/isfahan-tile-piece.png"
-                alt="قطعه کاشی واقعی از مسجدهای اصفهان"
-                width={160}
-                height={122}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <p className="title mt-8 text-3xl font-bold text-white">آرامش، بر اساس هندسه یک درمان موفق</p>
-            <div className="mt-8 grid grid-cols-2 gap-3 text-right">
-              {["رزرو جلسه", "آزمون‌ها", "یادداشت درمانگر", "کیف پول"].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white/90 backdrop-blur"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
+        <div className="psy-fade-up order-first flex items-center justify-center lg:order-none lg:min-h-[520px] [animation-delay:180ms]">
+          <div className="psy-logo-lockup">
+            <span className="psy-logo-glow psy-logo-glow-pink" aria-hidden />
+            <span className="psy-logo-glow psy-logo-glow-aqua" aria-hidden />
+            <Image
+              src="/psy/ayeh-mark.png"
+              alt="آیه؛ نشانی یک حال خوب"
+              width={357}
+              height={436}
+              priority
+              className="relative z-10 h-auto w-full max-w-[240px] drop-shadow-[0_18px_28px_rgba(6,28,53,0.1)] lg:max-w-[320px]"
+            />
           </div>
         </div>
       </div>

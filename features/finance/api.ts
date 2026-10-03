@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api/client";
-import type { PaginatedLedger, SepInitiateResponse, Wallet } from "./types";
+import type { PaginatedLedger, VandarInitiateResponse, Wallet } from "./types";
 
 export const financeApi = {
   wallet(): Promise<Wallet> {
@@ -12,7 +12,7 @@ export const financeApi = {
     );
   },
 
-  sepInitiate(amount: number, purpose = "wallet-topup"): Promise<SepInitiateResponse> {
-    return apiClient.post("/finance/sep/initiate/", { amount, purpose });
+  vandarInitiate(amount: number, purpose = "wallet-topup"): Promise<VandarInitiateResponse> {
+    return apiClient.post("/finance/vandar/initiate/", { amount, purpose });
   },
 };

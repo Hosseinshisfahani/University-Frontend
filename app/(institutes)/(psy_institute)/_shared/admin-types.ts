@@ -62,8 +62,8 @@ export type AdminTherapistDetail = AdminTherapistSummary & {
 export type FinanceSummary = {
   from: string;
   to: string;
-  sep_succeeded_total: string;
-  sep_succeeded_count: number;
+  gateway_succeeded_total: string;
+  gateway_succeeded_count: number;
   appointment_capture_total: string;
   appointment_capture_count: number;
   refund_total: string;

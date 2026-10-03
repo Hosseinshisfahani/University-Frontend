@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { formatJalaliDateTime } from "@/lib/datetime/jalali";
-import { useLedger, useSepInitiate, useWallet } from "../hooks";
+import { useLedger, useVandarInitiate, useWallet } from "../hooks";
 import { formatIrr, formatLedgerEntryType, formatToman } from "../types";
 
 function formatAmountInput(raw: string) {
@@ -24,16 +24,16 @@ export default function WalletPageClient() {
   const { data: wallet, isLoading: walletLoading } = useWallet();
   const [page, setPage] = useState(1);
   const { data: ledger, isLoading: ledgerLoading } = useLedger(page);
-  const initiate = useSepInitiate();
-  const [amount, setAmount] = useState("500,000");
+  const initiate = useVandarInitiate();
+  const [amount, setAmount] = useState("50,000");
   const [error, setError] = useState<string | null>(null);
 
   async function onTopUp(e: FormEvent) {
     e.preventDefault();
     setError(null);
     const value = Number(amount.replace(/,/g, ""));
-    if (!Number.isFinite(value) || value < 1) {
-      setError("مبلغ معتبر وارد کنید.");
+    if (!Number.isFinite(value) || value < 100) {
+      setError("مبلغ باید حداقل ۱۰۰ تومان باشد.");
       return;
     }
     try {
@@ -84,7 +84,7 @@ export default function WalletPageClient() {
         className="flex flex-col gap-4 rounded-2xl border border-foreground/10 p-5 sm:flex-row sm:items-end"
       >
         <label className="flex flex-1 flex-col gap-2 text-sm">
-          <span>مبلغ شارژ (ریال)</span>
+          <span>مبلغ شارژ (تومان)</span>
           <input
             type="text"
             inputMode="numeric"
@@ -99,7 +99,7 @@ export default function WalletPageClient() {
           disabled={initiate.isPending}
           className="rounded-lg bg-primary px-6 py-3 font-medium text-[#332B1A] disabled:opacity-60"
         >
-          {initiate.isPending ? "در حال اتصال به درگاه…" : "شارژ از طریق سپ"}
+          {initiate.isPending ? "در حال اتصال به درگاه…" : "شارژ از طریق وندار"}
         </button>
       </form>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}

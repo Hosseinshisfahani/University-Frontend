@@ -35,7 +35,7 @@ export type PaginatedLedger = {
   results: LedgerEntry[];
 };
 
-export type SepInitiateResponse = {
+export type VandarInitiateResponse = {
   payment: {
     id: number;
     amount: string;

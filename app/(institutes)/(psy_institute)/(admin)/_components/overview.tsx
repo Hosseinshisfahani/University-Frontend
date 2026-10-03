@@ -116,7 +116,7 @@ export default function OverviewClient() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {[
           { href: "/admin/schedule", label: "عملیات برنامه", desc: "بازتولید زمان‌های خالی درمانگران" },
-          { href: "/admin/finance", label: "مالی", desc: "دفترکل، SEP و درآمد نوبت" },
+          { href: "/admin/finance", label: "مالی", desc: "دفترکل، درگاه پرداخت و درآمد نوبت" },
           { href: "/admin/users/patients", label: "کاربران", desc: "فهرست مراجعان و درمانگران" },
         ].map((card) => (
           <Link

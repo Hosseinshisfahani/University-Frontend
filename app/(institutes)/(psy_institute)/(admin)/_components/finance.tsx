@@ -18,7 +18,7 @@ import {
   useFinanceSummary,
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy-admin";
 
-type Tab = "ledger" | "sep" | "revenue";
+type Tab = "ledger" | "gateway" | "revenue";
 
 const REVENUE_ENTRY_TYPES = new Set(["appointment_capture", "refund"]);
 
@@ -58,7 +58,7 @@ export default function FinanceOverviewClient() {
   });
   const { data: payments } = useFinancePayments({
     status: "succeeded",
-    provider: "sep",
+    provider: "gateway",
     from,
     to,
     page,
@@ -71,7 +71,7 @@ export default function FinanceOverviewClient() {
   });
 
   const active =
-    tab === "ledger" ? ledger : tab === "sep" ? payments : revenue;
+    tab === "ledger" ? ledger : tab === "gateway" ? payments : revenue;
 
   return (
     <div className="space-y-6">
@@ -100,7 +100,7 @@ export default function FinanceOverviewClient() {
             }}
           />
         </label>
-        {tab !== "sep" ? (
+        {tab !== "gateway" ? (
           <label className="text-sm">
             <span className="mb-1 block opacity-55">نوع</span>
             <select
@@ -126,9 +126,9 @@ export default function FinanceOverviewClient() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
-              label: "SEP موفق",
-              value: formatIrr(summary.sep_succeeded_total),
-              sub: `${summary.sep_succeeded_count} تراکنش`,
+              label: "درگاه موفق",
+              value: formatIrr(summary.gateway_succeeded_total),
+              sub: `${summary.gateway_succeeded_count} تراکنش`,
             },
             {
               label: "دریافت نوبت",
@@ -162,7 +162,7 @@ export default function FinanceOverviewClient() {
         {(
           [
             ["ledger", "کلی"],
-            ["sep", "درگاه پرداخت"],
+            ["gateway", "درگاه پرداخت"],
             ["revenue", " درآمد نوبت ها "],
           ] as const
         ).map(([key, label]) => (
@@ -195,7 +195,7 @@ export default function FinanceOverviewClient() {
                 <th className="px-3 py-2 text-start">مبلغ</th>
               </tr>
             ) : null}
-            {tab === "sep" ? (
+            {tab === "gateway" ? (
               <tr>
                 <th className="px-3 py-2 text-start">زمان</th>
                 <th className="px-3 py-2 text-start">کاربر</th>
@@ -228,7 +228,7 @@ export default function FinanceOverviewClient() {
                   </tr>
                 ))
               : null}
-            {tab === "sep"
+            {tab === "gateway"
               ? (payments?.results ?? []).map((row) => (
                   <tr key={row.id} className="border-t border-[#0f1a1c]/5 dark:border-white/5">
                     <td className="px-3 py-2">{formatJalaliDateTime(row.created_at)}</td>

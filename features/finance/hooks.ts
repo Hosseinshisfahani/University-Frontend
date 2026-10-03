@@ -22,10 +22,10 @@ export function useLedger(page: number) {
   });
 }
 
-export function useSepInitiate() {
+export function useVandarInitiate() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (amount: number) => financeApi.sepInitiate(amount),
+    mutationFn: (amount: number) => financeApi.vandarInitiate(amount),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: financeKeys.wallet });
       window.location.href = data.redirect_url;
