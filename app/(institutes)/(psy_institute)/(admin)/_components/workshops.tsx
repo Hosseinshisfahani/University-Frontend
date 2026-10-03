@@ -14,6 +14,7 @@ import { useAdminTherapists } from "@/app/(institutes)/(psy_institute)/_shared/u
 import type { Workshop, WorkshopWrite, WorkshopResourceWrite, WorkshopSessionWrite } from "@/app/(institutes)/(psy_institute)/_shared/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { psyApi } from "@/app/(institutes)/(psy_institute)/_shared/api";
+import JalaliDateTimePicker from "@/app/(institutes)/(psy_institute)/_shared/jalali-datetime-picker";
 
 /** Admin sees all workshops (including drafts) via unauthenticated? No — admin cookie. */
 export function WorkshopsAdminListClient() {
@@ -290,20 +291,20 @@ function WorkshopFormFields({
         </label>
         <label className="block text-sm">
           <span className="mb-1 block opacity-60">شروع</span>
-          <input
-            type="datetime-local"
-            className="w-full rounded-md border px-3 py-2 dark:border-white/15 dark:bg-transparent"
+          <JalaliDateTimePicker
+            required
             value={form.starts_at ?? ""}
-            onChange={(e) => setForm((f) => ({ ...f, starts_at: e.target.value }))}
+            onChange={(starts_at) => setForm((f) => ({ ...f, starts_at }))}
+            inputClass="w-full rounded-md border px-3 py-2 dark:border-white/15 dark:bg-transparent"
           />
         </label>
         <label className="block text-sm">
           <span className="mb-1 block opacity-60">پایان</span>
-          <input
-            type="datetime-local"
-            className="w-full rounded-md border px-3 py-2 dark:border-white/15 dark:bg-transparent"
+          <JalaliDateTimePicker
+            required
             value={form.ends_at ?? ""}
-            onChange={(e) => setForm((f) => ({ ...f, ends_at: e.target.value }))}
+            onChange={(ends_at) => setForm((f) => ({ ...f, ends_at }))}
+            inputClass="w-full rounded-md border px-3 py-2 dark:border-white/15 dark:bg-transparent"
           />
         </label>
       </div>
@@ -620,21 +621,15 @@ export function WorkshopCurriculumAdminClient({ slug }: { slug: string }) {
               }))
             }
           />
-          <input
-            type="datetime-local"
-            className="rounded border px-2 py-1.5 dark:border-white/15 dark:bg-transparent"
+          <JalaliDateTimePicker
             value={sessionForm.starts_at ?? ""}
-            onChange={(e) =>
-              setSessionForm((f) => ({ ...f, starts_at: e.target.value }))
-            }
+            onChange={(starts_at) => setSessionForm((f) => ({ ...f, starts_at }))}
+            inputClass="w-full rounded border px-2 py-1.5 dark:border-white/15 dark:bg-transparent"
           />
-          <input
-            type="datetime-local"
-            className="rounded border px-2 py-1.5 dark:border-white/15 dark:bg-transparent"
+          <JalaliDateTimePicker
             value={sessionForm.ends_at ?? ""}
-            onChange={(e) =>
-              setSessionForm((f) => ({ ...f, ends_at: e.target.value }))
-            }
+            onChange={(ends_at) => setSessionForm((f) => ({ ...f, ends_at }))}
+            inputClass="w-full rounded border px-2 py-1.5 dark:border-white/15 dark:bg-transparent"
           />
           <input
             placeholder="لینک Meet"
