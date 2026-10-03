@@ -33,6 +33,7 @@ import {
 } from "@/app/(institutes)/(psy_institute)/_shared/use-psy-admin";
 import { slotStatusLabel } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
 import type { AdminAppointmentSlot } from "@/app/(institutes)/(psy_institute)/_shared/types";
+import { toAsciiDigits } from "@/lib/phone";
 
 const WEEKDAYS = [
   { value: 5, label: "شنبه" },
@@ -58,12 +59,37 @@ function firstApiError(err: unknown, fallback: string): string {
     return fallback;
   }
   const body = err.body as Record<string, unknown>;
-  for (const key of ["weekday", "detail", "non_field_errors"]) {
+  const keys = [
+    "detail",
+    "non_field_errors",
+    "weekday",
+    "name",
+    "price",
+    "duration_minutes",
+    "slug",
+    "modality",
+    "buffer_minutes",
+  ];
+  for (const key of keys) {
     const value = body[key];
     if (typeof value === "string" && value) return value;
     if (Array.isArray(value) && value[0]) return String(value[0]);
   }
+  for (const value of Object.values(body)) {
+    if (typeof value === "string" && value) return value;
+    if (Array.isArray(value) && value[0]) return String(value[0]);
+  }
   return fallback;
+}
+
+function asciiDigits(raw: string): string {
+  return toAsciiDigits(raw).replace(/\D/g, "");
+}
+
+function groupedDigits(raw: string): string {
+  const digits = asciiDigits(raw);
+  if (!digits) return "";
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function startOfPersianWeek(d: Date): Date {
@@ -316,7 +342,7 @@ function CreateSlotPanel({
     e.preventDefault();
     setError(null);
     setMessage(null);
-    const minutes = Number(duration);
+    const minutes = Number(asciiDigits(duration));
     if (!startDate || !startTime || !minutes) return;
     try {
       await create.mutateAsync({
@@ -358,11 +384,11 @@ function CreateSlotPanel({
           <span className="mb-1 block opacity-60">مدت (دقیقه)</span>
           <input
             required
-            type="number"
-            min={1}
+            inputMode="numeric"
+            dir="ltr"
             value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 dark:border-white/15"
+            onChange={(e) => setDuration(asciiDigits(e.target.value))}
+            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 text-left dark:border-white/15"
           />
         </label>
       </div>
@@ -491,15 +517,19 @@ function OffersPanel({ therapistId }: { therapistId: number }) {
   async function addNewType(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    const durationMinutes = Number(duration);
-    const bufferMinutes = Number(buffer || 0);
-    if (!name.trim() || !durationMinutes || !price.trim()) return;
+    const durationMinutes = Number(asciiDigits(duration));
+    const bufferMinutes = Number(asciiDigits(buffer) || 0);
+    const priceDigits = asciiDigits(price);
+    if (!name.trim() || !durationMinutes || !priceDigits) {
+      setError("نام، مدت و قیمت را کامل وارد کنید.");
+      return;
+    }
     try {
       const created = await createType.mutateAsync({
         name: name.trim(),
         modality,
         duration_minutes: durationMinutes,
-        price: price.trim(),
+        price: priceDigits,
         buffer_minutes: Number.isFinite(bufferMinutes) ? bufferMinutes : 0,
       });
       await createOffer.mutateAsync({
@@ -511,8 +541,8 @@ function OffersPanel({ therapistId }: { therapistId: number }) {
       setModality("in_person");
       setPrice("");
       setBuffer("0");
-    } catch {
-      setError("ثبت نوع جلسه جدید ناموفق بود.");
+    } catch (err) {
+      setError(firstApiError(err, "ثبت نوع جلسه جدید ناموفق بود."));
     }
   }
 
@@ -535,7 +565,8 @@ function OffersPanel({ therapistId }: { therapistId: number }) {
               {offer.session_type.name}
               <span className="opacity-50">
                 {" "}
-                · {offer.session_type.duration_minutes} دقیقه
+                · {offer.session_type.duration_minutes} دقیقه ·{" "}
+                {groupedDigits(String(offer.session_type.price))} ریال
                 {!offer.is_active ? " · غیرفعال" : ""}
               </span>
             </span>
@@ -606,11 +637,11 @@ function OffersPanel({ therapistId }: { therapistId: number }) {
           <span className="mb-1 block opacity-60">مدت (دقیقه)</span>
           <input
             required
-            type="number"
-            min={1}
+            inputMode="numeric"
+            dir="ltr"
             value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 dark:border-white/15"
+            onChange={(e) => setDuration(asciiDigits(e.target.value))}
+            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 text-left dark:border-white/15"
           />
         </label>
         <label className="text-sm">
@@ -629,19 +660,20 @@ function OffersPanel({ therapistId }: { therapistId: number }) {
           <input
             required
             inputMode="numeric"
+            dir="ltr"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 dark:border-white/15"
+            onChange={(e) => setPrice(groupedDigits(e.target.value))}
+            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 text-left dark:border-white/15"
           />
         </label>
         <label className="text-sm">
           <span className="mb-1 block opacity-60">فاصله بین جلسات (دقیقه)</span>
           <input
-            type="number"
-            min={0}
+            inputMode="numeric"
+            dir="ltr"
             value={buffer}
-            onChange={(e) => setBuffer(e.target.value)}
-            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 dark:border-white/15"
+            onChange={(e) => setBuffer(asciiDigits(e.target.value))}
+            className="w-full rounded-md border border-[#0f1a1c]/15 bg-transparent px-2 py-2 text-left dark:border-white/15"
           />
         </label>
         <button

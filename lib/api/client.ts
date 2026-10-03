@@ -107,6 +107,16 @@ export class ApiClient {
       headers.set("Content-Type", "application/json");
     }
 
+    // Same-origin /api calls. These request headers make WCDN SMART skip a
+    // cached GET. Without them the edge kept serving an empty session-type
+    // list after the rows had already been saved.
+    if (!headers.has("Cache-Control")) {
+      headers.set("Cache-Control", "no-cache");
+    }
+    if (!headers.has("Pragma")) {
+      headers.set("Pragma", "no-cache");
+    }
+
     if (!skipCsrf && !SAFE_METHODS.has(method)) {
       await this.ensureCsrfCookie();
       const csrf = getCookie(CSRF_COOKIE_NAME);
@@ -120,6 +130,9 @@ export class ApiClient {
       method,
       headers,
       credentials: "include",
+      // Bypass the browser cache and send Pragma: no-cache so WCDN SMART
+      // does not replay a stale GET (empty session-type / offer lists).
+      cache: "no-store",
       body:
         body === undefined
           ? undefined
@@ -195,6 +208,8 @@ export class ApiClient {
     await fetch(`${this.baseUrl}/auth/csrf/`, {
       method: "GET",
       credentials: "include",
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
     });
   }
 
@@ -224,7 +239,10 @@ export class ApiClient {
       // disables CookieJWTAuthentication, but middleware / future changes
       // are safer if the header is always present).
       await this.ensureCsrfCookie();
-      const headers = new Headers();
+      const headers = new Headers({
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      });
       const csrf = getCookie(CSRF_COOKIE_NAME);
       if (csrf) {
         headers.set(CSRF_HEADER_NAME, csrf);
@@ -234,6 +252,7 @@ export class ApiClient {
         method: "POST",
         credentials: "include",
         headers,
+        cache: "no-store",
       });
       return response.ok;
     } catch {
