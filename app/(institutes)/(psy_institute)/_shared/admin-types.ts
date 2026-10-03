@@ -1,4 +1,10 @@
-import type { Appointment, ClinicalReport, PsychometricResponse, Therapist } from "./types";
+import type {
+  Appointment,
+  ClinicalReport,
+  PsychometricResponse,
+  Therapist,
+  TherapistSessionOffer,
+} from "./types";
 
 export type Paginated<T> = {
   count: number;
@@ -50,12 +56,7 @@ export type AdminTherapistSummary = Therapist & {
 
 export type AdminTherapistDetail = AdminTherapistSummary & {
   availability_count: number;
-  offers: {
-    id: number;
-    session_type_id: number;
-    session_type_name: string;
-    is_active: boolean;
-  }[];
+  offers: TherapistSessionOffer[];
   recent_appointments: Appointment[];
 };
 

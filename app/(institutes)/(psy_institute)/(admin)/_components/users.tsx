@@ -405,7 +405,7 @@ export function TherapistSummaryClient() {
         <ul className="space-y-1 text-sm">
             {t.offers.map((o) => (
               <li key={o.id}>
-                {o.session_type_name || "—"} {o.is_active ? "" : "(غیرفعال)"}
+                {o.session_type?.name || "—"} {o.is_active ? "" : "(غیرفعال)"}
               </li>
             ))}
           {!t.offers.length ? <li className="opacity-50">موردی نیست.</li> : null}
