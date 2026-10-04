@@ -24,6 +24,10 @@ export type PublicTherapistReview = {
 export type Therapist = {
   id: number;
   display_name: string;
+  avatarUrl?: string | null;
+  profileImage?: string | null;
+  avatar_url?: string | null;
+  profile_image?: string | null;
   bio: string;
   specialties: string[];
   is_accepting_patients: boolean;

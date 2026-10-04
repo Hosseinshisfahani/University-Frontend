@@ -367,11 +367,22 @@ export function TherapistSummaryClient() {
       >
         ← فهرست درمانگران
       </Link>
-      <div>
-        <h1 className="title text-2xl font-bold">{t.display_name}</h1>
-        <p className="mt-1 text-sm opacity-55">
-          @{t.username} · {t.email || "بدون ایمیل"}
-        </p>
+      <div className="flex items-center gap-4">
+        {t.profile_image ? (
+          // Admin photos are served from the Django media proxy.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={t.profile_image}
+            alt={t.display_name}
+            className="h-20 w-20 rounded-full object-cover"
+          />
+        ) : null}
+        <div>
+          <h1 className="title text-2xl font-bold">{t.display_name}</h1>
+          <p className="mt-1 text-sm opacity-55">
+            @{t.username} · {t.email || "بدون ایمیل"}
+          </p>
+        </div>
       </div>
 
       <dl className="grid gap-3 rounded-lg border border-[#0f1a1c]/10 bg-white p-5 text-sm dark:border-white/10 dark:bg-[#0f1618] sm:grid-cols-2">
