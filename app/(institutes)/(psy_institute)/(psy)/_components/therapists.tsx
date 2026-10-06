@@ -158,6 +158,7 @@ function TherapistAvatar({
           src={imageSrc}
           alt={therapist.display_name}
           fill
+          unoptimized
           sizes={
             size === "xl"
               ? "(max-width: 640px) 128px, 144px"
