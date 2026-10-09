@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { financeKeys } from "@/features/finance/hooks";
 import { psyApi } from "./api";
-import type { AvailabilityWrite, ExceptionWrite, LeaveRequestWrite, ClinicalReportWrite } from "./types";
+import type { AvailabilityWrite, ExceptionWrite, LeaveRequestWrite, ClinicalReportWrite, ShopCatalogQuery, ShippingAddress } from "./types";
 
 export const psyKeys = {
   therapists: ["psy", "therapists"] as const,
@@ -40,6 +40,13 @@ export const psyKeys = {
   therapistPublicReviews: (id: number) =>
     ["psy", "therapists", id, "reviews"] as const,
   therapistReviews: ["psy", "therapist", "reviews"] as const,
+  shopCategories: ["psy", "shop", "categories"] as const,
+  shopProducts: (params: Record<string, unknown>) =>
+    ["psy", "shop", "products", params] as const,
+  shopProduct: (slug: string) => ["psy", "shop", "products", slug] as const,
+  cart: ["psy", "shop", "cart"] as const,
+  shopOrders: ["psy", "shop", "orders"] as const,
+  shopOrder: (id: number) => ["psy", "shop", "orders", id] as const,
 };
 
 export function useTherapists() {
@@ -792,6 +799,144 @@ export function useDeleteNewsSlide() {
     mutationFn: (id: number) => psyApi.deleteNewsSlide(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: psyKeys.newsSlides });
+    },
+  });
+}
+
+function invalidateCart(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: psyKeys.cart });
+}
+
+export function useShopCategories() {
+  return useQuery({
+    queryKey: psyKeys.shopCategories,
+    queryFn: () => psyApi.shopCategories(),
+  });
+}
+
+export function useShopProducts(params: ShopCatalogQuery) {
+  return useQuery({
+    queryKey: psyKeys.shopProducts(params),
+    queryFn: () => psyApi.shopProducts(params),
+  });
+}
+
+export function useShopProduct(slug: string) {
+  return useQuery({
+    queryKey: psyKeys.shopProduct(slug),
+    queryFn: () => psyApi.shopProduct(slug),
+    enabled: Boolean(slug),
+  });
+}
+
+export function useCart(enabled = true) {
+  return useQuery({
+    queryKey: psyKeys.cart,
+    queryFn: () => psyApi.shopCart(),
+    enabled,
+  });
+}
+
+export function useAddToCart() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { slug?: string; product_id?: number; quantity?: number }) =>
+      psyApi.addShopCartItem(vars),
+    onSuccess: () => invalidateCart(qc),
+  });
+}
+
+export function useUpdateCartItem() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id: number; quantity: number }) =>
+      psyApi.updateShopCartItem(vars.id, vars.quantity),
+    onSuccess: () => invalidateCart(qc),
+  });
+}
+
+export function useRemoveCartItem() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => psyApi.removeShopCartItem(id),
+    onSuccess: () => invalidateCart(qc),
+  });
+}
+
+export function useApplyCoupon() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (code: string) => psyApi.applyShopCoupon(code),
+    onSuccess: () => invalidateCart(qc),
+  });
+}
+
+export function useRemoveCoupon() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => psyApi.removeShopCoupon(),
+    onSuccess: () => invalidateCart(qc),
+  });
+}
+
+export function useMyOrders() {
+  return useQuery({
+    queryKey: psyKeys.shopOrders,
+    queryFn: () => psyApi.shopOrders(),
+  });
+}
+
+export function useOrder(id: number) {
+  return useQuery({
+    queryKey: psyKeys.shopOrder(id),
+    queryFn: () => psyApi.shopOrder(id),
+    enabled: id > 0,
+  });
+}
+
+export function useCheckout() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Partial<ShippingAddress>) => psyApi.checkoutShop(data),
+    onSuccess: (order) => {
+      invalidateCart(qc);
+      qc.invalidateQueries({ queryKey: psyKeys.shopOrders });
+      qc.setQueryData(psyKeys.shopOrder(order.id), order);
+    },
+  });
+}
+
+export function usePayOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id: number; idempotencyKey: string }) =>
+      psyApi.payShopOrder(vars.id, vars.idempotencyKey),
+    onSuccess: (order) => {
+      qc.invalidateQueries({ queryKey: psyKeys.shopOrders });
+      qc.invalidateQueries({ queryKey: psyKeys.shopOrder(order.id) });
+      qc.invalidateQueries({ queryKey: financeKeys.wallet });
+    },
+  });
+}
+
+export function useStartGatewayPayment() {
+  return useMutation({
+    mutationFn: (id: number) => psyApi.startShopGateway(id),
+    onSuccess: (data) => {
+      window.location.href = data.redirect_url;
+    },
+  });
+}
+
+export function useCancelOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id: number; reason?: string }) =>
+      psyApi.cancelShopOrder(vars.id, vars.reason ?? ""),
+    onSuccess: (order) => {
+      qc.invalidateQueries({ queryKey: psyKeys.shopOrders });
+      qc.invalidateQueries({ queryKey: psyKeys.shopOrder(order.id) });
+      qc.invalidateQueries({ queryKey: financeKeys.wallet });
     },
   });
 }

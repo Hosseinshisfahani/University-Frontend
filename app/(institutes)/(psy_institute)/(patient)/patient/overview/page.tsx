@@ -7,6 +7,8 @@ export default function PatientOverviewPage() {
     { href: "/patient/appointments", title: "نوبت‌های من", desc: "نوبت‌های آینده و گذشته" },
     { href: "/patient/notes", title: "یادداشت‌ها", desc: "یادداشت‌های اشتراک‌گذاری‌شده درمانگر" },
     { href: "/patient/tests", title: "آزمون‌ها", desc: "پرسشنامه‌های روان‌سنجی" },
+    { href: "/psy/shop", title: "فروشگاه", desc: "کتاب و فایل‌های مرکز" },
+    { href: "/patient/shop/orders", title: "سفارش‌ها", desc: "پیگیری خرید و دانلود فایل" },
   ];
 
   return (

@@ -119,3 +119,32 @@ export function riskFlagLabel(flag: string): string {
   };
   return map[flag] ?? flag;
 }
+
+export function orderStatusLabel(status: string): string {
+  const map: Record<string, string> = {
+    pending_payment: "در انتظار پرداخت",
+    paid: "پرداخت‌شده",
+    processing: "در حال آماده‌سازی",
+    shipped: "ارسال‌شده",
+    delivered: "تحویل‌شده",
+    canceled: "لغو شده",
+    refunded: "بازپرداخت شده",
+  };
+  return map[status] ?? status;
+}
+
+export function productKindLabel(kind: string): string {
+  const map: Record<string, string> = {
+    physical: "کالای فیزیکی",
+    digital: "فایل دیجیتال",
+  };
+  return map[kind] ?? kind;
+}
+
+export function couponKindLabel(kind: string): string {
+  const map: Record<string, string> = {
+    percent: "درصدی",
+    fixed: "مبلغ ثابت",
+  };
+  return map[kind] ?? kind;
+}

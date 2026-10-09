@@ -16,6 +16,8 @@ const NAV = [
   { href: "/patient/appointments", label: "نوبت‌ها" },
   { href: "/patient/appointments/book", label: "رزرو نوبت" },
   { href: "/patient/workshops", label: "کارگاه‌ها" },
+  { href: "/patient/shop/cart", label: "سبد خرید" },
+  { href: "/patient/shop/orders", label: "سفارش‌ها" },
   { href: "/patient/notes", label: "یادداشت‌ها" },
   { href: "/patient/tests", label: "آزمون‌ها" },
   { href: "/patient/tests/history", label: "سوابق آزمون" },

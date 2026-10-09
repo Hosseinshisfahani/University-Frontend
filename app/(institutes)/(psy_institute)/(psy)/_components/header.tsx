@@ -7,10 +7,14 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { HiBars3, HiXMark } from "react-icons/hi2";
 import ThemeToggle from "@/components/theme-toggle";
 import AuthNavButton from "@/features/auth/components/AuthNavButton";
+import { useAuthStore } from "@/features/auth/store";
+import { isPsyPatient } from "@/features/auth/types";
+import { useCart } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
 
 const NAV = [
   { href: "/psy/therapists", label: "درمانگران" },
   { href: "/psy/workshops", label: "کارگاه‌ها" },
+  { href: "/psy/shop", label: "فروشگاه" },
   { href: "/psy/blog", label: "مقالات" },
   { href: "/psy/tests", label: "آزمون ها" },
 ];
@@ -18,6 +22,11 @@ const NAV = [
 export default function PsyHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
+  const user = useAuthStore((s) => s.user);
+  const patient = isHydrated && isPsyPatient(user);
+  const cart = useCart(patient);
+  const count = (cart.data?.items ?? []).reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <header className="psy-header sticky top-0 z-50 border-b border-[var(--psy-line)] bg-[var(--psy-surface)]/85 backdrop-blur-md">
@@ -48,6 +57,11 @@ export default function PsyHeader() {
         </ul>
 
         <div className="hidden items-center gap-3 md:flex">
+          {patient ? (
+            <Link href="/patient/shop/cart" className="text-sm text-[var(--psy-ink)]">
+              سبد{count ? ` (${count})` : ""}
+            </Link>
+          ) : null}
           <ThemeToggle />
           <AuthNavButton className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-[#332B1A] transition hover:opacity-90" />
         </div>
@@ -99,6 +113,15 @@ export default function PsyHeader() {
               );
             })}
           </ul>
+          {patient ? (
+            <Link
+              href="/patient/shop/cart"
+              onClick={() => setOpen(false)}
+              className="text-sm text-[var(--psy-ink)]"
+            >
+              سبد خرید{count ? ` (${count})` : ""}
+            </Link>
+          ) : null}
           <AuthNavButton
             onNavigate={() => setOpen(false)}
             className="mt-auto rounded-lg bg-primary px-5 py-3 text-center text-sm font-medium text-[#332B1A]"

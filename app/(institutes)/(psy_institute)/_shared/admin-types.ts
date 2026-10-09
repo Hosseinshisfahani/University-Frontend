@@ -69,6 +69,8 @@ export type FinanceSummary = {
   appointment_capture_count: number;
   refund_total: string;
   refund_count: number;
+  shop_purchase_total: string;
+  shop_purchase_count: number;
   net_appointment_revenue: string;
 };
 

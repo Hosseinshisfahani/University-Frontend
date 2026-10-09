@@ -123,7 +123,7 @@ export default function FinanceOverviewClient() {
       </div>
 
       {summary ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {[
             {
               label: "درگاه موفق",
@@ -139,6 +139,11 @@ export default function FinanceOverviewClient() {
               label: "بازپرداخت",
               value: formatIrr(summary.refund_total),
               sub: `${summary.refund_count} مورد`,
+            },
+            {
+              label: "فروش فروشگاه",
+              value: formatIrr(summary.shop_purchase_total),
+              sub: `${summary.shop_purchase_count} سفارش`,
             },
             {
               label: "درآمد خالص نوبت",

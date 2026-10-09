@@ -34,6 +34,17 @@ import type {
   TherapistFinanceReport,
   TherapistReview,
   PublicTherapistReview,
+  Product,
+  ProductCategory,
+  ProductPage,
+  ProductWrite,
+  ShopCatalogQuery,
+  Coupon,
+  CouponWrite,
+  Cart,
+  ShopOrder,
+  ShopGatewayStart,
+  ShippingAddress,
 } from "./types";
 
 export const psyApi = {
@@ -492,5 +503,136 @@ export const psyApi = {
 
   deleteNewsSlide(id: number): Promise<void> {
     return apiClient.delete(`/psy/news/${id}/`);
+  },
+
+  shopCategories(): Promise<ProductCategory[]> {
+    return apiClient.get("/psy/shop/categories/");
+  },
+
+  createShopCategory(data: {
+    name: string;
+    slug: string;
+    description?: string;
+    sort_order?: number;
+    is_active?: boolean;
+  }): Promise<ProductCategory> {
+    return apiClient.post("/psy/shop/categories/", data);
+  },
+
+  updateShopCategory(
+    slug: string,
+    data: Partial<{
+      name: string;
+      slug: string;
+      description: string;
+      sort_order: number;
+      is_active: boolean;
+    }>,
+  ): Promise<ProductCategory> {
+    return apiClient.patch(`/psy/shop/categories/${slug}/`, data);
+  },
+
+  deleteShopCategory(slug: string): Promise<void> {
+    return apiClient.delete(`/psy/shop/categories/${slug}/`);
+  },
+
+  shopProducts(params?: ShopCatalogQuery): Promise<ProductPage> {
+    const q = new URLSearchParams();
+    if (params?.category) q.set("category", params.category);
+    if (params?.q) q.set("q", params.q);
+    if (params?.kind) q.set("kind", params.kind);
+    if (params?.ordering) q.set("ordering", params.ordering);
+    if (params?.page) q.set("page", String(params.page));
+    const qs = q.toString();
+    return apiClient.get(`/psy/shop/products/${qs ? `?${qs}` : ""}`);
+  },
+
+  shopProduct(slug: string): Promise<Product> {
+    return apiClient.get(`/psy/shop/products/${slug}/`);
+  },
+
+  createShopProduct(data: ProductWrite | FormData): Promise<Product> {
+    return apiClient.post("/psy/shop/products/", data);
+  },
+
+  updateShopProduct(
+    slug: string,
+    data: Partial<ProductWrite> | FormData,
+  ): Promise<Product> {
+    return apiClient.patch(`/psy/shop/products/${slug}/`, data);
+  },
+
+  deleteShopProduct(slug: string): Promise<void> {
+    return apiClient.delete(`/psy/shop/products/${slug}/`);
+  },
+
+  shopCoupons(): Promise<Coupon[]> {
+    return apiClient.get("/psy/shop/coupons/");
+  },
+
+  createShopCoupon(data: CouponWrite): Promise<Coupon> {
+    return apiClient.post("/psy/shop/coupons/", data);
+  },
+
+  updateShopCoupon(id: number, data: Partial<CouponWrite>): Promise<Coupon> {
+    return apiClient.patch(`/psy/shop/coupons/${id}/`, data);
+  },
+
+  deleteShopCoupon(id: number): Promise<void> {
+    return apiClient.delete(`/psy/shop/coupons/${id}/`);
+  },
+
+  shopCart(): Promise<Cart> {
+    return apiClient.get("/psy/shop/cart/");
+  },
+
+  addShopCartItem(data: {
+    slug?: string;
+    product_id?: number;
+    quantity?: number;
+  }): Promise<Cart> {
+    return apiClient.post("/psy/shop/cart/items/", data);
+  },
+
+  updateShopCartItem(id: number, quantity: number): Promise<Cart> {
+    return apiClient.patch(`/psy/shop/cart/items/${id}/`, { quantity });
+  },
+
+  removeShopCartItem(id: number): Promise<Cart> {
+    return apiClient.delete(`/psy/shop/cart/items/${id}/`);
+  },
+
+  applyShopCoupon(code: string): Promise<Cart> {
+    return apiClient.post("/psy/shop/cart/coupon/", { code });
+  },
+
+  removeShopCoupon(): Promise<Cart> {
+    return apiClient.delete("/psy/shop/cart/coupon/");
+  },
+
+  shopOrders(): Promise<ShopOrder[]> {
+    return apiClient.get("/psy/shop/orders/");
+  },
+
+  shopOrder(id: number): Promise<ShopOrder> {
+    return apiClient.get(`/psy/shop/orders/${id}/`);
+  },
+
+  checkoutShop(data: Partial<ShippingAddress>): Promise<ShopOrder> {
+    return apiClient.post("/psy/shop/orders/", data);
+  },
+
+  payShopOrder(id: number, idempotencyKey: string): Promise<ShopOrder> {
+    return apiClient.post(`/psy/shop/orders/${id}/pay/`, {
+      idempotency_key: idempotencyKey,
+    });
+  },
+
+  startShopGateway(id: number): Promise<ShopGatewayStart> {
+    return apiClient.post(`/psy/shop/orders/${id}/gateway/`, {});
+  },
+
+  cancelShopOrder(id: number, reason = ""): Promise<ShopOrder> {
+    return apiClient.post(`/psy/shop/orders/${id}/cancel/`, { reason });
   },
 };

@@ -19,6 +19,7 @@ const LINKS = [
   { href: "/psy/therapists", label: "درمانگران" },
   { href: "/psy/tests", label: "آزمون‌ها" },
   { href: "/psy/workshops", label: "کارگاه‌ها" },
+  { href: "/psy/shop", label: "فروشگاه" },
   { href: "/psy/blog", label: "مقالات" },
 ];
 

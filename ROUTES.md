@@ -59,6 +59,8 @@ Layout: `PsyHeader` + `PsyFooter` — `app/(institutes)/(psy_institute)/(psy)/la
 | `/psy/workshops/[slug]` | `.../(psy)/psy/workshops/[slug]/page.tsx` | Workshop detail |
 | `/psy/blog` | `.../(psy)/psy/blog/page.tsx` | Articles list |
 | `/psy/blog/[slug]` | `.../(psy)/psy/blog/[slug]/page.tsx` | Article detail |
+| `/psy/shop` | `.../(psy)/psy/shop/page.tsx` | Product catalog |
+| `/psy/shop/[slug]` | `.../(psy)/psy/shop/[slug]/page.tsx` | Product detail |
 
 ---
 
@@ -83,6 +85,9 @@ Guard: `PatientGuard` · shell: `PatientShell`
 | `/patient/tests` | `.../patient/tests/page.tsx` | Take tests |
 | `/patient/tests/history` | `.../patient/tests/history/page.tsx` | Submitted tests |
 | `/patient/tests/[slug]` | `.../patient/tests/[slug]/page.tsx` | Test form |
+| `/patient/shop/cart` | `.../patient/shop/cart/page.tsx` | Cart and checkout |
+| `/patient/shop/orders` | `.../patient/shop/orders/page.tsx` | Order history |
+| `/patient/shop/orders/[id]` | `.../patient/shop/orders/[id]/page.tsx` | Order detail, pay, download |
 
 ---
 
@@ -141,6 +146,14 @@ Guard: `AdminGuard` · shell: `AdminShell`
 | `/admin/news` | `.../admin/news/page.tsx` | Landing news slides |
 | `/admin/news/new` | `.../admin/news/new/page.tsx` | New slide |
 | `/admin/news/[id]` | `.../admin/news/[id]/page.tsx` | Edit slide |
+| `/admin/shop` | `.../admin/shop/page.tsx` | Shop sales stats |
+| `/admin/shop/products` | `.../admin/shop/products/page.tsx` | Products |
+| `/admin/shop/products/new` | `.../admin/shop/products/new/page.tsx` | New product |
+| `/admin/shop/products/[slug]` | `.../admin/shop/products/[slug]/page.tsx` | Edit product |
+| `/admin/shop/categories` | `.../admin/shop/categories/page.tsx` | Categories |
+| `/admin/shop/orders` | `.../admin/shop/orders/page.tsx` | Orders |
+| `/admin/shop/orders/[id]` | `.../admin/shop/orders/[id]/page.tsx` | Order status / refund |
+| `/admin/shop/coupons` | `.../admin/shop/coupons/page.tsx` | Coupons |
 
 ---
 

@@ -4,12 +4,22 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { financeKeys, useWallet } from "@/features/finance/hooks";
+import { financeKeys, usePayment, useWallet } from "@/features/finance/hooks";
 import { formatIrr } from "@/features/finance/types";
+import { useOrder, usePayOrder } from "@/app/(institutes)/(psy_institute)/_shared/use-psy";
+import { orderStatusLabel } from "@/app/(institutes)/(psy_institute)/_shared/helpers";
 
 function SuccessInner() {
   const params = useSearchParams();
   const paymentId = params.get("payment_id");
+  const payment = usePayment(paymentId ? Number(paymentId) : null);
+  const purpose = payment.data?.purpose ?? "";
+  const orderId = purpose.startsWith("psy.order:")
+    ? Number(purpose.slice("psy.order:".length))
+    : 0;
+  const order = useOrder(Number.isFinite(orderId) ? orderId : 0);
+  const pay = usePayOrder();
+  const isShop = params.get("source") === "shop" || purpose.startsWith("psy.order:");
   const next = params.get("next");
   const safeNext =
     next &&
@@ -36,21 +46,57 @@ function SuccessInner() {
       <p className="text-lg font-medium">
         موجودی فعلی: {formatIrr(wallet?.balance ?? 0)}
       </p>
+      {order.data ? (
+        <div className="space-y-3 text-sm">
+          <p>
+            سفارش {order.data.number}: {orderStatusLabel(order.data.status)}
+          </p>
+          {order.data.status === "pending_payment" ? (
+            <button
+              type="button"
+              disabled={pay.isPending}
+              onClick={() =>
+                pay.mutate({
+                  id: order.data.id,
+                  idempotencyKey: `order-pay:${order.data.id}`,
+                })
+              }
+              className="rounded-lg bg-primary px-5 py-3 text-sm font-medium text-[#332B1A] disabled:opacity-60"
+            >
+              پرداخت سفارش از کیف پول
+            </button>
+          ) : null}
+          <Link
+            href={`/patient/shop/orders/${order.data.id}`}
+            className="inline-block rounded-lg border border-foreground/15 px-5 py-3 text-sm font-medium"
+          >
+            مشاهده سفارش
+          </Link>
+        </div>
+      ) : null}
       <div className="flex flex-wrap justify-center gap-3">
-        {safeNext ? (
+        {isShop ? (
+          <Link
+            href="/patient/overview"
+            className="inline-block rounded-lg bg-primary px-5 py-3 text-sm font-medium text-[#332B1A]"
+          >
+            ادامه
+          </Link>
+        ) : safeNext ? (
           <Link
             href={safeNext}
             className="inline-block rounded-lg bg-primary px-5 py-3 text-sm font-medium text-[#332B1A]"
           >
             ادامه ثبت‌نام
           </Link>
-        ) : null}
-        <Link
-          href="/patient/wallet"
-          className="inline-block rounded-lg border border-foreground/15 px-5 py-3 text-sm font-medium"
-        >
-          بازگشت به کیف پول
-        </Link>
+        ) : (
+          <Link
+            href="/patient/wallet"
+            className="inline-block rounded-lg bg-primary px-5 py-3 text-sm font-medium text-[#332B1A]"
+          >
+            بازگشت به کیف پول
+          </Link>
+        )}
       </div>
     </div>
   );

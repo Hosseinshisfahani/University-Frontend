@@ -12,6 +12,8 @@ import type {
   TherapistSessionOffer,
   FileAccessRequest,
   MissingReportsPayload,
+  ShopOrder,
+  ShopStats,
 } from "./types";
 import type {
   AdminOverview,
@@ -334,5 +336,33 @@ export const adminApi = {
     page_size?: number;
   }): Promise<Paginated<SmsMessageRow>> {
     return apiClient.get(`/notifications/admin/messages/${qs(params ?? {})}`);
+  },
+
+  shopOrders(params?: {
+    status?: string;
+    q?: string;
+    page?: number;
+    page_size?: number;
+  }): Promise<Paginated<ShopOrder>> {
+    return apiClient.get(`/psy/admin/shop/orders/${qs(params ?? {})}`);
+  },
+
+  shopOrder(id: number): Promise<ShopOrder> {
+    return apiClient.get(`/psy/admin/shop/orders/${id}/`);
+  },
+
+  updateShopOrder(
+    id: number,
+    data: { status?: string; tracking_code?: string; admin_note?: string },
+  ): Promise<ShopOrder> {
+    return apiClient.patch(`/psy/admin/shop/orders/${id}/`, data);
+  },
+
+  refundShopOrder(id: number, reason = ""): Promise<ShopOrder> {
+    return apiClient.post(`/psy/admin/shop/orders/${id}/refund/`, { reason });
+  },
+
+  shopStats(): Promise<ShopStats> {
+    return apiClient.get("/psy/admin/shop/stats/");
   },
 };

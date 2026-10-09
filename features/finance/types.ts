@@ -13,6 +13,7 @@ export type LedgerEntryType =
   | "refund"
   | "forfeit"
   | "workshop_purchase"
+  | "shop_purchase"
   | "withdrawal"
   | "withdrawal_reversal"
   | "adjustment";
@@ -47,6 +48,16 @@ export type VandarInitiateResponse = {
   sandbox: boolean;
 };
 
+export type FinancePayment = {
+  id: number;
+  amount: string;
+  status: string;
+  provider: string;
+  provider_ref: string;
+  purpose: string;
+  created_at: string;
+};
+
 export function formatIrr(amount: string | number): string {
   const n = typeof amount === "string" ? Number(amount) : amount;
   return new Intl.NumberFormat("fa-IR").format(n) + " ریال";
@@ -64,6 +75,7 @@ const LEDGER_ENTRY_TYPE_FA: Record<LedgerEntryType, string> = {
   refund: "بازپرداخت",
   forfeit: "ضبط وجه",
   workshop_purchase: "ثبت نام کارگاه",
+  shop_purchase: "خرید فروشگاه",
   withdrawal: "برداشت",
   withdrawal_reversal: "برگشت برداشت",
   adjustment: "تعدیل",
@@ -85,6 +97,7 @@ export function formatLedgerDirection(direction: string): string {
 }
 
 export function formatPaymentPurpose(purpose: string): string {
+  if (purpose.startsWith("psy.order:")) return "پرداخت سفارش فروشگاه";
   const map: Record<string, string> = {
     "wallet-topup": "شارژ کیف پول",
     topup: "شارژ کیف پول",

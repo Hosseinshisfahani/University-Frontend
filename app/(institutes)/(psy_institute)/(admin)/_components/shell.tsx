@@ -21,6 +21,7 @@ const NAV = [
   { href: "/admin/workshops", label: "کارگاه‌ها" },
   { href: "/admin/blog", label: "مقالات" },
   { href: "/admin/news", label: "اخبار" },
+  { href: "/admin/shop", label: "فروشگاه" },
   { href: "/admin/users/patients", label: "مراجعان" },
   { href: "/admin/users/therapists", label: "درمانگران" },
   { href: "/admin/finance", label: "مالی" },

@@ -32,3 +32,11 @@ export function useVandarInitiate() {
     },
   });
 }
+
+export function usePayment(id: number | null) {
+  return useQuery({
+    queryKey: ["finance", "payment", id],
+    queryFn: () => financeApi.payment(id as number),
+    enabled: id != null && id > 0,
+  });
+}

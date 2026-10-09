@@ -43,6 +43,11 @@ export const adminKeys = {
   smsRecipients: (role?: string, q?: string) =>
     ["psy-admin", "sms", "recipients", role, q] as const,
   smsMessages: (page?: number) => ["psy-admin", "sms", "messages", page] as const,
+  shopStats: ["psy-admin", "shop", "stats"] as const,
+  shopOrders: (params: Record<string, unknown>) =>
+    ["psy-admin", "shop", "orders", params] as const,
+  shopOrder: (id: number) => ["psy-admin", "shop", "orders", id] as const,
+  shopCoupons: ["psy-admin", "shop", "coupons"] as const,
 };
 
 export function useAdminOverview() {
@@ -510,5 +515,142 @@ export function useFinanceRevenue(params: {
     queryKey: adminKeys.financeRevenue(params),
     queryFn: () => adminApi.financeRevenue(params),
     enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useShopStats() {
+  return useQuery({
+    queryKey: adminKeys.shopStats,
+    queryFn: () => adminApi.shopStats(),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useAdminShopOrders(params: {
+  status?: string;
+  q?: string;
+  page?: number;
+}) {
+  return useQuery({
+    queryKey: adminKeys.shopOrders(params),
+    queryFn: () => adminApi.shopOrders({ ...params, page_size: 25 }),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useAdminShopOrder(id: number) {
+  return useQuery({
+    queryKey: adminKeys.shopOrder(id),
+    queryFn: () => adminApi.shopOrder(id),
+    enabled: useAdminQueriesEnabled(id > 0),
+  });
+}
+
+export function useUpdateAdminShopOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: {
+      id: number;
+      status?: string;
+      tracking_code?: string;
+      admin_note?: string;
+    }) => adminApi.updateShopOrder(vars.id, vars),
+    onSuccess: (order) => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "shop"] });
+      qc.setQueryData(adminKeys.shopOrder(order.id), order);
+    },
+  });
+}
+
+export function useRefundAdminShopOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id: number; reason?: string }) =>
+      adminApi.refundShopOrder(vars.id, vars.reason ?? ""),
+    onSuccess: (order) => {
+      qc.invalidateQueries({ queryKey: ["psy-admin", "shop"] });
+      qc.setQueryData(adminKeys.shopOrder(order.id), order);
+    },
+  });
+}
+
+export function useAdminCoupons() {
+  return useQuery({
+    queryKey: adminKeys.shopCoupons,
+    queryFn: () => psyApi.shopCoupons(),
+    enabled: useAdminQueriesEnabled(),
+  });
+}
+
+export function useSaveCoupon() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id?: number; data: Parameters<typeof psyApi.createShopCoupon>[0] }) =>
+      vars.id ? psyApi.updateShopCoupon(vars.id, vars.data) : psyApi.createShopCoupon(vars.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.shopCoupons });
+    },
+  });
+}
+
+export function useDeleteCoupon() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => psyApi.deleteShopCoupon(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.shopCoupons });
+    },
+  });
+}
+
+export function useSaveShopCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: {
+      slug?: string;
+      data: Parameters<typeof psyApi.createShopCategory>[0];
+    }) =>
+      vars.slug
+        ? psyApi.updateShopCategory(vars.slug, vars.data)
+        : psyApi.createShopCategory(vars.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.shopCategories });
+    },
+  });
+}
+
+export function useDeleteShopCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (slug: string) => psyApi.deleteShopCategory(slug),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: psyKeys.shopCategories });
+    },
+  });
+}
+
+export function useSaveShopProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: {
+      slug?: string;
+      data: Parameters<typeof psyApi.createShopProduct>[0];
+    }) =>
+      vars.slug
+        ? psyApi.updateShopProduct(vars.slug, vars.data)
+        : psyApi.createShopProduct(vars.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy", "shop", "products"] });
+    },
+  });
+}
+
+export function useDeleteShopProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (slug: string) => psyApi.deleteShopProduct(slug),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["psy", "shop", "products"] });
+    },
   });
 }

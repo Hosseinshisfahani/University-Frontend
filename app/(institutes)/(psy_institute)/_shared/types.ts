@@ -477,3 +477,201 @@ export type NewsSlideWrite = {
   sort_order?: number;
   is_published?: boolean;
 };
+
+export type ProductKind = "physical" | "digital";
+
+export type ProductCategory = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
+export type Product = {
+  id: number;
+  title: string;
+  slug: string;
+  category: number | null;
+  category_name: string | null;
+  category_slug: string | null;
+  kind: ProductKind | string;
+  description: string;
+  body_md: string;
+  price: string;
+  compare_at_price: string | null;
+  image: string | null;
+  has_digital_file: boolean;
+  viewer_can_download: boolean;
+  is_published: boolean;
+  is_available: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ProductWrite = {
+  title: string;
+  slug: string;
+  category?: number | null;
+  kind: string;
+  description?: string;
+  body_md?: string;
+  price: string | number;
+  compare_at_price?: string | number | null;
+  is_published?: boolean;
+  is_available?: boolean;
+  sort_order?: number;
+};
+
+export type ProductPage = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Product[];
+};
+
+export type ShopCatalogQuery = {
+  category?: string;
+  q?: string;
+  kind?: string;
+  ordering?: string;
+  page?: number;
+};
+
+export type Coupon = {
+  id: number;
+  code: string;
+  kind: "percent" | "fixed" | string;
+  value: string;
+  max_discount: string | null;
+  min_order_total: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  max_uses: number | null;
+  max_uses_per_user: number;
+  used_count: number;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type CouponWrite = {
+  code: string;
+  kind: string;
+  value: string | number;
+  max_discount?: string | number | null;
+  min_order_total?: string | number;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  max_uses?: number | null;
+  max_uses_per_user?: number;
+  is_active?: boolean;
+};
+
+export type CartItem = {
+  id: number;
+  quantity: number;
+  line_total: string;
+  buyable: boolean;
+  product: Product;
+};
+
+export type CartCoupon = {
+  id: number;
+  code: string;
+  kind?: string;
+  value?: string;
+};
+
+export type Cart = {
+  id: number;
+  items: CartItem[];
+  coupon: CartCoupon | null;
+  coupon_error: { code?: string; detail?: string } | null;
+  subtotal: string;
+  discount_total: string;
+  shipping_fee: string;
+  total: string;
+  requires_shipping: boolean;
+};
+
+export type ShippingAddress = {
+  full_name: string;
+  phone: string;
+  province: string;
+  city: string;
+  address: string;
+  postal_code: string;
+};
+
+export type OrderStatus =
+  | "pending_payment"
+  | "paid"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "canceled"
+  | "refunded"
+  | string;
+
+export type OrderItem = {
+  id: number;
+  product: number;
+  product_slug: string;
+  title: string;
+  kind: string;
+  unit_price: string;
+  quantity: number;
+  line_total: string;
+  has_digital_file: boolean;
+};
+
+export type ShopOrder = {
+  id: number;
+  number: string;
+  status: OrderStatus;
+  patient_name: string;
+  requires_shipping: boolean;
+  shipping_full_name: string;
+  shipping_phone: string;
+  shipping_province: string;
+  shipping_city: string;
+  shipping_address: string;
+  shipping_postal_code: string;
+  subtotal: string;
+  discount_total: string;
+  shipping_fee: string;
+  total: string;
+  coupon_code: string;
+  payment_ref: string;
+  hold_expires_at: string | null;
+  paid_at: string | null;
+  shipped_at: string | null;
+  tracking_code: string;
+  canceled_at: string | null;
+  cancellation_reason: string;
+  admin_note: string;
+  items: OrderItem[];
+  created_at: string;
+};
+
+export type ShopGatewayStart = {
+  redirect_url: string;
+  provider_ref: string;
+  sandbox: boolean;
+  payment_id: number;
+  order: ShopOrder;
+};
+
+export type ShopStats = {
+  revenue_total: string;
+  orders_paid_count: number;
+  revenue_7d: string;
+  orders_7d: number;
+  revenue_30d: string;
+  orders_30d: number;
+  orders_by_status: Record<string, number>;
+  top_products: { title: string; quantity: number; revenue: string }[];
+  recent_orders: ShopOrder[];
+};
