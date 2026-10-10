@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { useRef } from "react";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import AuthNavButton, {
   AuthGuestOnly,
@@ -11,7 +12,6 @@ import { useNewsSlides } from "@/app/(institutes)/(psy_institute)/_shared/use-ps
 import type { NewsSlide } from "@/app/(institutes)/(psy_institute)/_shared/types";
 
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 export function PsyHero() {
@@ -28,7 +28,7 @@ export function PsyHero() {
             آیه؛ نشانیِ یک حالِ خوب
           </h1>
           <p className="psy-fade-up mt-5 max-w-xl text-base leading-8 text-[var(--psy-muted)] sm:text-lg [animation-delay:180ms]">
-            از رزرو جلسه تا آزمون‌های روان‌سنجی و پیگیری درمان، همه چیز در پورتالی محرمانه و یکپارچه
+            از رزرو جلسه تا آزمون‌های روان‌سنجی و پیگیری درمان، همه چیز در پورتالی امن و یکپارچه
           </p>
           <div className="psy-fade-up mt-10 flex flex-wrap gap-3 [animation-delay:240ms]">
             <AuthNavButton
@@ -44,21 +44,37 @@ export function PsyHero() {
               </Link>
             </AuthGuestOnly>
           </div>
-          <dl className="psy-fade-up mt-12 grid max-w-xl grid-cols-3 gap-3 [animation-delay:300ms]">
-            {[
-              ["امن", "پرونده محرمانه"],
-              ["آرام", "مسیر روشن درمان"],
-              ["دقیق", "آزمون استاندارد"],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="rounded-2xl border border-[var(--psy-line)] bg-[var(--psy-surface)]/60 p-4 shadow-sm backdrop-blur"
-              >
-                <dt className="title text-xl font-bold text-[var(--psy-persian-blue)]">{label}</dt>
-                <dd className="mt-1 text-xs leading-5 text-[var(--psy-muted)]">{value}</dd>
-              </div>
-            ))}
-          </dl>
+          <div className="psy-fade-up mt-12 grid max-w-xl gap-3 sm:grid-cols-3 [animation-delay:300ms]">
+            <Link
+              href="/patient/appointments/book"
+              className="rounded-2xl border border-[var(--psy-line)] bg-[var(--psy-surface)]/60 p-4 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-[var(--psy-persian-blue)]/40"
+            >
+              <span className="title block text-lg font-bold text-[var(--psy-persian-blue)]">
+                رزرو نوبت آنلاین
+              </span>
+              <span className="mt-1 block text-sm text-[var(--psy-muted)]">انتخاب درمانگر و نوبت</span>
+            </Link>
+            <a
+              href="tel:+989130430530"
+              className="rounded-2xl border border-[var(--psy-line)] bg-[var(--psy-surface)]/60 p-4 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-[var(--psy-persian-blue)]/40"
+            >
+              <span className="title block text-lg font-bold text-[var(--psy-persian-blue)]">
+                رزرو نوبت تلفنی
+              </span>
+              <span dir="ltr" className="mt-1 block text-sm text-[var(--psy-muted)]">
+                ۰۹۱۳۰۴۳۰۵۳۰
+              </span>
+            </a>
+            <Link
+              href="/login"
+              className="rounded-2xl border border-[var(--psy-line)] bg-[var(--psy-surface)]/60 p-4 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-[var(--psy-persian-blue)]/40"
+            >
+              <span className="title block text-lg font-bold text-[var(--psy-persian-blue)]">
+                از اینجا شروع کن
+              </span>
+              <span className="mt-1 block text-sm text-[var(--psy-muted)]">ورود و ثبت‌نام در پورتال</span>
+            </Link>
+          </div>
         </div>
 
         <div className="psy-fade-up order-first flex items-center justify-center lg:order-none lg:min-h-[520px] [animation-delay:180ms]">
@@ -89,9 +105,24 @@ function isExternalHref(href: string) {
   return /^https?:\/\//i.test(href);
 }
 
+function ChevronIcon({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="h-5 w-5" fill="none">
+      <path
+        d={direction === "right" ? "M9 6l6 6-6 6" : "M15 6l-6 6 6 6"}
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function PsyNewsSlider() {
   const { data, isLoading } = useNewsSlides();
   const slides = (data ?? []).filter((slide) => slide.is_published);
+  const swiperRef = useRef<{ slidePrev: () => void; slideNext: () => void } | null>(null);
 
   if (isLoading || !slides.length) return null;
 
@@ -110,9 +141,29 @@ export function PsyNewsSlider() {
               تازه‌های مرکز
             </h2>
           </div>
+          {slides.length > 1 ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="خبر قبلی"
+                onClick={() => swiperRef.current?.slidePrev()}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--psy-line)] bg-[var(--psy-surface)] text-[var(--psy-ink)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--psy-persian-blue)]/40 hover:text-[var(--psy-persian-blue)]"
+              >
+                <ChevronIcon direction="right" />
+              </button>
+              <button
+                type="button"
+                aria-label="خبر بعدی"
+                onClick={() => swiperRef.current?.slideNext()}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--psy-line)] bg-[var(--psy-surface)] text-[var(--psy-ink)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--psy-persian-blue)]/40 hover:text-[var(--psy-persian-blue)]"
+              >
+                <ChevronIcon direction="left" />
+              </button>
+            </div>
+          ) : null}
         </div>
         <Swiper
-          modules={[Autoplay, Pagination, Navigation]}
+          modules={[Autoplay, Pagination]}
           dir="rtl"
           loop={slides.length > 1}
           speed={650}
@@ -123,31 +174,36 @@ export function PsyNewsSlider() {
             pauseOnMouseEnter: true,
           }}
           pagination={{ clickable: true }}
-          navigation={slides.length > 1}
-          className="psy-news-swiper overflow-hidden rounded-[2rem]"
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          className="psy-news-swiper"
         >
           {slides.map((slide) => {
             const href = slideHref(slide);
             const cta = slide.link_label?.trim() || "بیشتر بخوانید";
             return (
               <SwiperSlide key={slide.id}>
-                <article className="relative isolate min-h-[22rem] overflow-hidden sm:min-h-[26rem]">
-                  {slide.image ? (
-                    <div
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${slide.image})` }}
-                      aria-hidden
-                    />
-                  ) : (
-                    <div className="psy-hero-wash absolute inset-0" aria-hidden />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#061c35]/90 via-[#061c35]/45 to-transparent" />
-                  <div className="relative flex min-h-[22rem] flex-col justify-end p-6 sm:min-h-[26rem] sm:p-10">
-                    <h3 className="title max-w-2xl text-2xl font-bold text-white sm:text-4xl">
+                <article className="grid overflow-hidden rounded-[2rem] border border-[var(--psy-line)] bg-[var(--psy-surface)] shadow-sm md:grid-cols-2">
+                  <div className="order-first flex min-h-64 items-center justify-center bg-[var(--psy-mist)] p-4 md:order-last md:min-h-[24rem] md:p-6">
+                    {slide.image ? (
+                      // News banners are Django media files, not public assets.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={slide.image}
+                        alt=""
+                        className="max-h-[28rem] w-full rounded-2xl object-contain"
+                      />
+                    ) : (
+                      <div className="psy-hero-wash h-full min-h-64 w-full rounded-2xl" aria-hidden />
+                    )}
+                  </div>
+                  <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
+                    <h3 className="title text-2xl font-bold text-[var(--psy-ink)] sm:text-3xl">
                       {slide.title}
                     </h3>
                     {slide.body ? (
-                      <p className="mt-3 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
+                      <p className="mt-4 text-sm leading-8 text-[var(--psy-muted)] sm:text-base">
                         {slide.body}
                       </p>
                     ) : null}
@@ -366,7 +422,7 @@ function ServiceCard({
   );
 
   return (
-    <article className="psy-tile-card group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[var(--psy-line)] bg-[var(--psy-surface)] shadow-sm transition hover:-translate-y-1 hover:border-[var(--psy-persian-blue)]/30 hover:shadow-xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[var(--psy-line)] bg-[var(--psy-surface)] shadow-sm transition hover:-translate-y-1 hover:border-[var(--psy-persian-blue)]/30 hover:shadow-xl">
       <div className="p-6">
         <div className="flex items-center gap-3">
           <span className="title inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--psy-persian-blue)] text-sm font-bold text-white shadow-lg shadow-[var(--psy-persian-blue)]/20">

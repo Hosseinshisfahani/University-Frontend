@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { ApiError } from "@/lib/api/client";
+import { PasswordField } from "./PasswordField";
 import { useLogin, useRedirectIfAuthenticated } from "../hooks";
 
 export default function LoginForm() {
@@ -62,18 +63,20 @@ export default function LoginForm() {
         />
       </label>
 
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium text-foreground/80">رمز عبور</span>
-        <input
+      <div className="flex flex-col gap-2 text-sm">
+        <label htmlFor="password" className="font-medium text-foreground/80">
+          رمز عبور
+        </label>
+        <PasswordField
+          id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={fieldClass}
         />
-      </label>
+      </div>
 
       <p className="text-start text-sm">
         <Link href="/forgot-password" className="font-medium text-foreground hover:text-primary">

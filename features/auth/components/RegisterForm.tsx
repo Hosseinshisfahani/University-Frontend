@@ -4,6 +4,7 @@ import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { ApiError } from "@/lib/api/client";
 import { toAsciiDigits } from "@/lib/phone";
+import { PasswordField } from "./PasswordField";
 import {
   useRedirectIfAuthenticated,
   useRegister,
@@ -147,11 +148,13 @@ export default function RegisterForm() {
         />
       </label>
 
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium text-foreground/80">رمز عبور</span>
-        <input
+      <div className="flex flex-col gap-2 text-sm">
+        <label htmlFor="password" className="font-medium text-foreground/80">
+          رمز عبور
+        </label>
+        <PasswordField
+          id="password"
           name="password"
-          type="password"
           autoComplete="new-password"
           required={otpSent}
           minLength={8}
@@ -159,13 +162,15 @@ export default function RegisterForm() {
           onChange={(e) => setPassword(e.target.value)}
           className={fieldClass}
         />
-      </label>
+      </div>
 
-      <label className="flex flex-col gap-2 text-sm">
-        <span className="font-medium text-foreground/80">تکرار رمز عبور</span>
-        <input
+      <div className="flex flex-col gap-2 text-sm">
+        <label htmlFor="password_confirm" className="font-medium text-foreground/80">
+          تکرار رمز عبور
+        </label>
+        <PasswordField
+          id="password_confirm"
           name="password_confirm"
-          type="password"
           autoComplete="new-password"
           required={otpSent}
           minLength={8}
@@ -173,7 +178,7 @@ export default function RegisterForm() {
           onChange={(e) => setPasswordConfirm(e.target.value)}
           className={fieldClass}
         />
-      </label>
+      </div>
 
       {otpSent ? (
         <label className="flex flex-col gap-2 text-sm">

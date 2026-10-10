@@ -117,27 +117,6 @@ html.dark .psy-hero-wash {
   background: #3dcedd;
 }
 
-.psy-tile-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.psy-tile-card::before {
-  position: absolute;
-  inset: -1px;
-  content: "";
-  background:
-    linear-gradient(45deg, transparent 46%, color-mix(in srgb, var(--psy-persian-blue) 16%, transparent) 46% 54%, transparent 54%),
-    linear-gradient(-45deg, transparent 46%, color-mix(in srgb, var(--psy-gold) 15%, transparent) 46% 54%, transparent 54%);
-  background-size: 42px 42px;
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.psy-tile-card > * {
-  position: relative;
-}
-
 .psy-cta-ornament {
   position: relative;
   overflow: hidden;
@@ -158,27 +137,18 @@ html.dark .psy-hero-wash {
   position: relative;
 }
 
+.psy-news-swiper {
+  padding-bottom: 2.75rem;
+}
+
 .psy-news-swiper .swiper-pagination-bullet {
-  background: white;
-  opacity: 0.45;
+  background: var(--psy-persian-blue);
+  opacity: 0.35;
 }
 
 .psy-news-swiper .swiper-pagination-bullet-active {
   background: var(--psy-gold);
   opacity: 1;
-}
-
-.psy-news-swiper .swiper-button-next,
-.psy-news-swiper .swiper-button-prev {
-  color: white;
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
-.psy-news-swiper .swiper-button-next::after,
-.psy-news-swiper .swiper-button-prev::after {
-  font-size: 1.15rem;
-  font-weight: 700;
 }
 
 @keyframes psy-fade-up {
