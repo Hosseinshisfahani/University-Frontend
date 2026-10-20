@@ -15,7 +15,7 @@ type AuthNavButtonProps = {
 const PORTAL_LABEL: Record<string, string> = {
   "/admin/overview": "پنل مدیریت",
   "/therapist/overview": "پورتال درمانگر",
-  "/patient/overview": "پورتال مراجع",
+  "/patient/overview": "حساب کاربری",
 };
 
 export default function AuthNavButton({

@@ -65,7 +65,7 @@ export function PatientShell({ children }: { children: React.ReactNode }) {
       <div className="mx-auto flex min-h-screen max-w-6xl">
         <aside className="hidden w-64 shrink-0 border-l border-foreground/10 bg-white/40 p-5 dark:bg-black/20 lg:block">
           <Link href="/patient/overview" className="title gradient-text mb-8 block text-xl font-bold">
-            پورتال مراجع
+            حساب کاربری
           </Link>
           <NavLinks />
         </aside>

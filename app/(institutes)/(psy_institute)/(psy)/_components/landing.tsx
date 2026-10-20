@@ -24,17 +24,20 @@ export function PsyHero() {
           <p className="psy-fade-up title mt-7 max-w-2xl text-4xl font-extrabold tracking-tight text-[var(--psy-ink)] sm:text-5xl lg:text-6xl [animation-delay:60ms]">
             مرکز مشاوره آیه
           </p>
-          <h1 className="psy-fade-up mt-6 max-w-2xl text-2xl font-medium leading-relaxed text-[var(--psy-ink)]/90 sm:text-3xl [animation-delay:120ms]">
-            آیه؛ نشانیِ یک حالِ خوب
-          </h1>
-          <p className="psy-fade-up mt-5 max-w-xl text-base leading-8 text-[var(--psy-muted)] sm:text-lg [animation-delay:180ms]">
-            از رزرو جلسه تا آزمون‌های روان‌سنجی و پیگیری درمان، همه چیز در پورتالی امن و یکپارچه
+          <p className="psy-fade-up mt-15 max-w-xl text-base leading-8 text-[var(--psy-muted)] sm:text-lg [animation-delay:180ms]">
+            از رزرو جلسه تا آزمون‌های روان‌سنجی و پیگیری درمان،<br /> همه چیز در محیطی امن و یکپارچه
           </p>
           <div className="psy-fade-up mt-10 flex flex-wrap gap-3 [animation-delay:240ms]">
             <AuthNavButton
-              guestLabel="ورود به پورتال"
+              guestLabel="ورود به حساب کاربری"
               className="rounded-full bg-[var(--psy-persian-blue)] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--psy-persian-blue)]/20 transition hover:-translate-y-0.5 hover:bg-[var(--psy-persian-blue-deep)] sm:text-base"
             />
+            <Link
+              href="/psy/services"
+              className="rounded-full border border-[var(--psy-persian-blue)]/20 bg-[var(--psy-surface)]/80 px-7 py-3.5 text-sm font-semibold text-[var(--psy-ink)] shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-[var(--psy-persian-blue)]/45 sm:text-base"
+            >
+              مشاهده خدمات
+            </Link>
             <AuthGuestOnly>
               <Link
                 href="/register"
@@ -72,7 +75,7 @@ export function PsyHero() {
               <span className="title block text-lg font-bold text-[var(--psy-persian-blue)]">
                 از اینجا شروع کن
               </span>
-              <span className="mt-1 block text-sm text-[var(--psy-muted)]">ورود و ثبت‌نام در پورتال</span>
+              <span className="mt-1 block text-sm text-[var(--psy-muted)]">ورود به حساب کاربری</span>
             </Link>
           </div>
         </div>

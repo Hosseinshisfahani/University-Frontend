@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
-import { HiBars3, HiXMark } from "react-icons/hi2";
+import { HiBars3, HiXMark, HiShoppingBag } from "react-icons/hi2";
 import ThemeToggle from "@/components/theme-toggle";
 import AuthNavButton from "@/features/auth/components/AuthNavButton";
 import { useAuthStore } from "@/features/auth/store";
@@ -58,8 +58,9 @@ export default function PsyHeader() {
 
         <div className="hidden items-center gap-3 md:flex">
           {patient ? (
-            <Link href="/patient/shop/cart" className="text-sm text-[var(--psy-ink)]">
-              سبد{count ? ` (${count})` : ""}
+            <Link href="/patient/shop/cart" className="flex items-center gap-1.5 text-sm text-[var(--psy-ink)] hover:text-[var(--psy-persian-blue)]">
+              <HiShoppingBag size={20} className="shrink-0 text-[var(--psy-persian-blue)]" />
+              <span className="whitespace-nowrap">{count ? ` (${count})` : ""}</span>
             </Link>
           ) : null}
           <ThemeToggle />
@@ -79,20 +80,35 @@ export default function PsyHeader() {
         </div>
       </nav>
 
-      <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50 md:hidden">
-        <DialogBackdrop className="fixed inset-0 bg-black/40" />
-        <DialogPanel className="fixed inset-y-0 right-0 flex w-72 flex-col gap-6 bg-[var(--psy-surface)] p-5 shadow-xl">
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        className="relative z-50 md:hidden"
+        dir="rtl"
+      >
+        {/* لایه تیره پس‌زمینه با فید شدن ملایم */}
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-out data-[closed]:opacity-0"
+        />
+
+        {/* پنل کشویی با انیمیشن ورود و خروج نرم از سمت راست */}
+        <DialogPanel
+          transition
+          className="fixed inset-y-0 right-0 z-10 flex w-72 flex-col gap-6 bg-white p-5 shadow-2xl transition-transform duration-300 ease-out data-[closed]:translate-x-full dark:bg-neutral-900"
+        >
           <div className="flex items-center justify-between">
             <span className="font-bold text-[var(--psy-ink)]">منو</span>
             <button
               type="button"
               aria-label="بستن"
               onClick={() => setOpen(false)}
-              className="rounded-full border border-[var(--psy-line)] p-2"
+              className="rounded-full border border-[var(--psy-line)] p-2 text-[var(--psy-ink)] transition hover:bg-[var(--psy-mist)]"
             >
               <HiXMark size={18} />
             </button>
           </div>
+
           <ul className="flex flex-col gap-1">
             {NAV.map((item) => {
               const active = pathname.startsWith(item.href);
@@ -101,7 +117,7 @@ export default function PsyHeader() {
                   <Link
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className={`block rounded-lg px-3 py-2.5 hover:bg-[var(--psy-mist)] hover:text-[var(--psy-ink)] ${
+                    className={`block rounded-lg px-3 py-2.5 text-right transition hover:bg-[var(--psy-mist)] hover:text-[var(--psy-ink)] ${
                       active
                         ? "bg-[var(--psy-mist)] text-[var(--psy-ink)]"
                         : "text-[var(--psy-muted)]"
@@ -113,21 +129,23 @@ export default function PsyHeader() {
               );
             })}
           </ul>
+
           {patient ? (
             <Link
               href="/patient/shop/cart"
               onClick={() => setOpen(false)}
-              className="text-sm text-[var(--psy-ink)]"
-            >
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-right text-sm text-[var(--psy-ink)] transition hover:bg-[var(--psy-mist)]">
+              <HiShoppingBag size={20} className="shrink-0 text-[var(--psy-persian-blue)]" />
               سبد خرید{count ? ` (${count})` : ""}
             </Link>
           ) : null}
+
           <AuthNavButton
             onNavigate={() => setOpen(false)}
-            className="mt-auto rounded-lg bg-primary px-5 py-3 text-center text-sm font-medium text-[#332B1A]"
+            className="mt-auto rounded-lg bg-primary px-5 py-3 text-center text-sm font-medium text-[#332B1A] transition hover:opacity-95"
           />
         </DialogPanel>
       </Dialog>
-    </header>
+     </header>
   );
 }

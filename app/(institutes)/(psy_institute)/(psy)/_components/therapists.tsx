@@ -259,13 +259,13 @@ export function PsyTherapists({ service }: { service?: string }) {
                     className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[var(--psy-line)] bg-[var(--psy-surface)]/85 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--psy-persian-blue)]/30 hover:shadow-lg hover:shadow-[var(--psy-persian-blue)]/10"
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <TherapistAvatar therapist={therapist} />
+                      <TherapistAvatar therapist={therapist} size="lg" />
                       <span className="rounded-full bg-[var(--psy-mist)] px-3 py-1 text-xs font-semibold text-[var(--psy-persian-blue)]">
                         پذیرش فعال
                       </span>
                     </div>
                     <div className="mt-6 flex-1">
-                      <h2 className="title text-2xl font-bold text-[var(--psy-ink)]">
+                      <h2 className="title leading-[1.8] text-2xl font-bold text-[var(--psy-ink)]">
                         {therapist.display_name}
                       </h2>
                       <p className="mt-2 text-sm font-semibold text-[var(--psy-gold)]">
@@ -274,7 +274,7 @@ export function PsyTherapists({ service }: { service?: string }) {
                           therapist.rating_count ?? 0,
                         )}
                       </p>
-                      <p className="mt-4 line-clamp-3 text-sm leading-7 text-[var(--psy-muted)]">
+                      <p className="mt-4 whitespace-pre-line line-clamp-3 text-sm leading-7 text-[var(--psy-muted)]">
                         {therapist.bio || "شرح پروفایل این درمانگر به‌زودی تکمیل می‌شود."}
                       </p>
                       {therapist.specialties?.length ? (
@@ -540,7 +540,7 @@ export function TherapistPublicProfile({ id }: { id: number }) {
                 رزرو جلسه
               </h2>
               <p className="mt-3 text-sm leading-7 text-[var(--psy-muted)]">
-                برای انتخاب زمان، نوع جلسه و پرداخت امن وارد پورتال مراجع شوید.
+                برای انتخاب زمان، نوع جلسه و پرداخت امن وارد حساب کاربری شوید.
               </p>
               {therapist.is_accepting_patients ? (
                 <Link
