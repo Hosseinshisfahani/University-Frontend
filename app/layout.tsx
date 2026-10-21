@@ -52,6 +52,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    enamad: "77165304",
+  },
 };
 
 export default function RootLayout({
